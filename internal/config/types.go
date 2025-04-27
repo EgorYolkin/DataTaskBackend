@@ -6,6 +6,7 @@ type Config struct {
 	Database Database
 	RabbitMQ RabbitMQ
 	Swagger  Swagger
+	JWT      JWT
 }
 
 type HTTP struct {
@@ -24,16 +25,20 @@ type Swagger struct {
 }
 
 type Database struct {
-	Host string `mapstructure:"db_host" json:"db_host"`
-	Port string `mapstructure:"db_port" json:"db_port"`
-	User string `mapstructure:"db_user" json:"db_user"`
-	Pass string `mapstructure:"db_pass" json:"db_pass"`
-	Base string `mapstructure:"db_base" json:"db_base"`
+	Host string `mapstructure:"DB_HOST"`
+	Port string `mapstructure:"DB_PORT"`
+	User string `mapstructure:"DB_USER"`
+	Pass string `mapstructure:"DB_PASS"`
+	Base string `mapstructure:"DB_BASE"`
 }
 
 type RabbitMQ struct {
-	Host string `mapstructure:"rabbitmq_host" json:"rabbitmq_host"`
-	Port string `mapstructure:"rabbitmq_port" json:"rabbitmq_port"`
-	User string `mapstructure:"rabbitmq_user" json:"rabbitmq_user"`
-	Pass string `mapstructure:"rabbitmq_pass" json:"rabbitmq_pass"`
+	Host string `mapstructure:"RABBITMQ_HOST"`
+	Port string `mapstructure:"RABBITMQ_PORT"`
+	User string `mapstructure:"RABBITMQ_USER"`
+	Pass string `mapstructure:"RABBITMQ_PASS"`
+}
+
+type JWT struct {
+	Secret string `mapstructure:"JWT_SECRET"`
 }
