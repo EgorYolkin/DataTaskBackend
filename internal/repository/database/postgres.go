@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	UsersTable = "users"
+	UsersTable  = "users"
+	KanbanTable = "kanban"
 )
 
 func ConnectPostgres(dsn string) (*sql.DB, error) {
