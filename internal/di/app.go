@@ -2,6 +2,9 @@ package di
 
 import (
 	"DataTask/internal/config"
+	"DataTask/internal/controller/rest/handler/kanban_handler"
+	"DataTask/internal/controller/rest/handler/project_handler"
+	"DataTask/internal/controller/rest/handler/task_handler"
 	"DataTask/internal/controller/rest/handler/users_handler"
 	"DataTask/internal/controller/rest/middleware/auth_middleware"
 	"database/sql"
@@ -15,7 +18,10 @@ type App struct {
 	PrometheusHandler gin.HandlerFunc
 	SwaggerHandler    gin.HandlerFunc
 
-	UsersHandler *users_handler.UsersHandler
+	UsersHandler   *users_handler.UsersHandler
+	KanbanHandler  *kanban_handler.KanbanHandler
+	TaskHandler    *task_handler.TaskHandler
+	ProjectHandler *project_handler.ProjectHandler
 
 	AuthMiddleware *auth_middleware.AuthMiddleware
 }
@@ -30,6 +36,9 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	prometheusHandler := InitializePrometheusHandler()
 	swaggerHandler := InitializeSwaggerHandler(cfg, "DataTask")
 	usersHandler := InitializeUsersHandler(db, cfg.JWT.Secret)
+	kanbanHandler := InitializeKanbanHandler(db)
+	taskHandler := InitializeTaskHandler(db)
+	projectHandler := InitializeProjectHandler(db)
 
 	authMiddleware := auth_middleware.NewAuthMiddleware(cfg.JWT.Secret)
 
@@ -39,6 +48,9 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 		PrometheusHandler: prometheusHandler,
 		SwaggerHandler:    swaggerHandler,
 		UsersHandler:      usersHandler,
+		KanbanHandler:     kanbanHandler,
+		TaskHandler:       taskHandler,
+		ProjectHandler:    projectHandler,
 
 		AuthMiddleware: authMiddleware,
 	}, nil

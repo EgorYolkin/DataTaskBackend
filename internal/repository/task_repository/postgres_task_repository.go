@@ -37,6 +37,9 @@ func (r *PostgresTaskRepository) GetTaskByID(ctx context.Context, id int) (*enti
     `, database.TaskTable)
 
 	row := r.db.QueryRowContext(ctx, q, id)
+
+	task := new(entity.Task) // Initialize task as a pointer
+
 	err := row.Scan(&task.ID, &task.Title, &task.Description, &task.IsCompleted, &task.CreatedAt, &task.UpdatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("get task by id: %w", err)

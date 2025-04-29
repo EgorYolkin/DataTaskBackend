@@ -34,16 +34,12 @@ func (r *PostgresKanbanRepository) GetKanbanByID(ctx context.Context, id int) (*
     `, database.KanbanTable)
 
 	row := r.db.QueryRowContext(ctx, q, id)
+
+	kanban := new(entity.Kanban) // Initialize kanban as a pointer
+
 	err := row.Scan(&kanban.ID, &kanban.Name, &kanban.CreatedAt, &kanban.UpdatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("get kanban by id: %w", err)
-	}
-
-	kanban := &entity.Kanban{
-		ID:        kanban.ID,
-		Name:      kanban.Name,
-		CreatedAt: kanban.CreatedAt,
-		UpdatedAt: kanban.UpdatedAt,
 	}
 
 	return kanban, nil

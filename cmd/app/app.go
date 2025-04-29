@@ -17,12 +17,14 @@ func Run(cfg *config.Config) error {
 
 	router := gin.New()
 	router.Use(gin.Recovery())
+	router.Static("/docs", "./docs")
 
 	apiRouter := router.Group("/api/v1")
 	protectedApiRouter := apiRouter.Group("/")
 	protectedApiRouter.Use(app.AuthMiddleware.Middleware())
 
 	apiRouter.GET("/metrics", app.PrometheusHandler)
+	apiRouter.GET("/swagger/*any", app.SwaggerHandler)
 
 	usersHandlerRouterGroup := apiRouter.Group("/users")
 	{
@@ -40,6 +42,47 @@ func Run(cfg *config.Config) error {
 	{
 		protectedUsersRouterGroup.POST("/me", app.UsersHandler.HandleGetCurrentUser)
 	}
+
+	// Kanban Routes
+	kanbanHandlerRouterGroup := protectedApiRouter.Group("/kanbans")
+	{
+		kanbanHandlerRouterGroup.POST("/", app.KanbanHandler.HandleCreateKanban)
+		kanbanHandlerRouterGroup.GET("/:id", app.KanbanHandler.HandleGetKanbanByID)
+		kanbanHandlerRouterGroup.PUT("/:id", app.KanbanHandler.HandleUpdateKanban)
+		kanbanHandlerRouterGroup.DELETE("/:id", app.KanbanHandler.HandleDeleteKanban)
+	}
+
+	// Task Routes
+	taskHandlerRouterGroup := protectedApiRouter.Group("/tasks")
+	{
+		taskHandlerRouterGroup.POST("/", app.TaskHandler.HandleCreateTask)
+		taskHandlerRouterGroup.GET("/:id", app.TaskHandler.HandleGetTaskByID)
+		taskHandlerRouterGroup.PUT("/:id", app.TaskHandler.HandleUpdateTask)
+		taskHandlerRouterGroup.DELETE("/:id", app.TaskHandler.HandleDeleteTask)
+		taskHandlerRouterGroup.POST("/:task_id/assign", app.TaskHandler.HandleAssignUserToTask)
+	}
+	apiRouter.GET("/kanban_tasks/:kanban_id", app.TaskHandler.HandleGetTasksByKanbanID)
+	apiRouter.GET("/users/:user_id/tasks", app.TaskHandler.HandleGetTasksByUserID)
+	apiRouter.GET("/project_tasks/:project_id", app.TaskHandler.HandleGetTasksByProjectID)
+
+	// Project Routes
+	projectHandlerRouterGroup := protectedApiRouter.Group("/projects")
+	{
+		projectHandlerRouterGroup.POST("/", app.ProjectHandler.HandleCreateProject)
+		projectHandlerRouterGroup.GET("/:id", app.ProjectHandler.HandleGetProjectByID)
+		projectHandlerRouterGroup.PUT("/:id", app.ProjectHandler.HandleUpdateProject)
+		projectHandlerRouterGroup.DELETE("/:id", app.ProjectHandler.HandleDeleteProject)
+	}
+
+	projectUsersHandlerRouterGroup := protectedApiRouter.Group("/project_users") //  !!!  НОВЫЙ ПРЕФИКС !!!
+	{
+		projectUsersHandlerRouterGroup.POST("/:project_id/invite", app.ProjectHandler.HandleInviteUserToProject)
+		projectUsersHandlerRouterGroup.GET("/:project_id/permissions/:user_id", app.ProjectHandler.HandleGetUserPermissionsForProject) //  !!!  ИЗМЕНЕНО ПОРЯДОК СЕГМЕНТОВ !!!
+		projectUsersHandlerRouterGroup.GET("/:project_id", app.ProjectHandler.HandleGetUsersInProject)
+		projectUsersHandlerRouterGroup.POST("/:project_id/accept", app.ProjectHandler.HandleAcceptProjectInvitation)
+	}
+	apiRouter.GET("/user_projects/:owner_id", app.ProjectHandler.HandleGetProjectsByOwnerID)
+	apiRouter.GET("/project_subprojects/:parent_project_id", app.ProjectHandler.HandleGetSubprojects) //  !!!  НОВЫЙ ПРЕФИКС !!!
 
 	routerDSN := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
 

@@ -63,4 +63,15 @@ CREATE TABLE project_topics
     PRIMARY KEY (project_id, topic_id)
 );
 
+CREATE TABLE project_users
+(
+    project_id         INTEGER REFERENCES projects (id) ON DELETE CASCADE,
+    user_id            INTEGER REFERENCES users (id) ON DELETE CASCADE,
+    permission         VARCHAR(50) NOT NULL,                                 -- e.g., 'read', 'edit', 'owner'
+    invited_by_user_id INTEGER     REFERENCES users (id) ON DELETE SET NULL, -- Who invited the user
+    invited_at         TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    joined_at          TIMESTAMP WITHOUT TIME ZONE,                          -- When the user accepted the invitation
+    PRIMARY KEY (project_id, user_id)
+);
+
 COMMIT;

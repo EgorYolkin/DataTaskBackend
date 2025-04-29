@@ -10,6 +10,10 @@ const (
 	KanbanTable       = "kanban"
 	ProjectTasksTable = "project_tasks"
 	TaskTable         = "task"
+	ProjectsTable     = "projects"
+	TaskUsersTable    = "task_users"
+	ProjectUsersTable = "project_users"
+	KanbanTasksTable  = "kanban_tasks"
 )
 
 func ConnectPostgres(dsn string) (*sql.DB, error) {
