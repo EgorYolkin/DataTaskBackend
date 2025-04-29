@@ -5,10 +5,10 @@ import "time"
 type User struct {
 	ID int `json:"id,omitempty"`
 
-	Name      string `json:"name,omitempty"`
-	Surname   string `json:"surname,omitempty"`
-	Email     string `json:"email"`
-	AvatarURL string `json:"avatar_url,omitempty"`
+	Name      string  `json:"name,omitempty"`
+	Surname   string  `json:"surname,omitempty"`
+	Email     string  `json:"email"`
+	AvatarURL *string `json:"avatar_url,omitempty"`
 
 	Password string `json:"-"`
 

@@ -5,6 +5,7 @@ import (
 	"DataTask/internal/repository/database"
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -22,14 +23,17 @@ func (r *PostgresUserRepository) CreateUser(ctx context.Context, user *entity.Us
 		   name, 
 		   surname, 
 		   email, 
-		   hashed_password
+		   hashed_password,
+		   salt
 		) VALUES (
-		   $1, $2, $3, $4
+		   $1, $2, $3, $4, $5
 		)
 		RETURNING id;
 	`, database.UsersTable)
 
-	err := r.db.QueryRowContext(ctx, q, user.Name, user.Surname, user.Email, user.HashedPassword).Scan(&user.ID)
+	fmt.Println(q)
+
+	err := r.db.QueryRowContext(ctx, q, user.Name, user.Surname, user.Email, user.HashedPassword, user.Salt).Scan(&user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -85,4 +89,45 @@ func (r *PostgresUserRepository) DeleteUser(ctx context.Context, id int) error {
 	}
 
 	return nil
+}
+
+func (r *PostgresUserRepository) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+	q := fmt.Sprintf(`
+		SELECT 
+			id, 
+			email, 
+			hashed_password, 
+			salt,
+			name, 
+			surname, 
+			avatar_url, 
+			created_at, 
+			updated_at
+		FROM %s WHERE email = $1;
+	`, database.UsersTable)
+
+	row := r.db.QueryRowContext(ctx, q, email)
+
+	var user entity.User
+
+	err := row.Scan(
+		&user.ID,
+		&user.Email,
+		&user.HashedPassword,
+		&user.Salt,
+		&user.Name,
+		&user.Surname,
+		&user.AvatarURL,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, fmt.Errorf("user not found")
+	}
+	if err != nil {
+		return nil, fmt.Errorf("scan error: %w", err)
+	}
+
+	return &user, nil
 }

@@ -4,6 +4,7 @@ import (
 	"DataTask/internal/domain/dto"
 	"DataTask/internal/domain/entity"
 	"DataTask/internal/repository/user_repository"
+	"DataTask/pkg/hashing"
 
 	"context"
 )
@@ -17,14 +18,22 @@ func NewUserUseCase(repo user_repository.UserRepository) *UserUseCaseImpl {
 }
 
 func (uc *UserUseCaseImpl) CreateUser(ctx context.Context, user *dto.User) error {
+	hashOptions := hashing.DefaultHashOptions
+	hashOptions.Value = user.Password
+
+	hashedPassword, err := hashing.Hash(hashOptions)
+	if err != nil {
+		return err
+	}
+
 	entityUser := entity.User{
 		Email:          user.Email,
 		Name:           user.Name,
 		Surname:        user.Surname,
-		HashedPassword: user.Password,
+		HashedPassword: hashedPassword,
 	}
 
-	_, err := uc.repo.CreateUser(ctx, &entityUser)
+	_, err = uc.repo.CreateUser(ctx, &entityUser)
 
 	if err != nil {
 		return err
@@ -35,10 +44,9 @@ func (uc *UserUseCaseImpl) CreateUser(ctx context.Context, user *dto.User) error
 
 func (uc *UserUseCaseImpl) UpdateUser(ctx context.Context, user *dto.User) (*dto.User, error) {
 	entityUser := entity.User{
-		Email:          user.Email,
-		Name:           user.Name,
-		Surname:        user.Surname,
-		HashedPassword: user.Password,
+		Email:   user.Email,
+		Name:    user.Name,
+		Surname: user.Surname,
 	}
 
 	u, err := uc.repo.UpdateUser(ctx, &entityUser)
@@ -66,4 +74,14 @@ func (uc *UserUseCaseImpl) DeleteUser(ctx context.Context, id int) error {
 	}
 
 	return nil
+}
+
+func (uc *UserUseCaseImpl) GetUserEntityByEmail(ctx context.Context, email string) (*entity.User, error) {
+	user, err := uc.repo.GetUserByEmail(ctx, email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

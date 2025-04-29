@@ -25,20 +25,20 @@ type Swagger struct {
 }
 
 type Database struct {
-	Host string `mapstructure:"DB_HOST"`
-	Port string `mapstructure:"DB_PORT"`
-	User string `mapstructure:"DB_USER"`
-	Pass string `mapstructure:"DB_PASS"`
-	Base string `mapstructure:"DB_BASE"`
+	Host string `mapstructure:"db_host"`
+	Port string `mapstructure:"db_port"`
+	User string `mapstructure:"db_user"`
+	Pass string `mapstructure:"db_pass"`
+	Base string `mapstructure:"db_base"`
 }
 
 type RabbitMQ struct {
-	Host string `mapstructure:"RABBITMQ_HOST"`
-	Port string `mapstructure:"RABBITMQ_PORT"`
-	User string `mapstructure:"RABBITMQ_USER"`
-	Pass string `mapstructure:"RABBITMQ_PASS"`
+	Host string `mapstructure:"rabbitmq_host"`
+	Port string `mapstructure:"rabbitmq_port"`
+	User string `mapstructure:"rabbitmq_user"`
+	Pass string `mapstructure:"rabbitmq_pass"`
 }
 
 type JWT struct {
-	Secret string `mapstructure:"JWT_SECRET"`
+	Secret string `mapstructure:"jwt_secret"`
 }

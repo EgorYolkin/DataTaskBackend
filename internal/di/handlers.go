@@ -2,7 +2,11 @@ package di
 
 import (
 	"DataTask/internal/config"
+	"DataTask/internal/controller/rest/handler/users_handler"
+	"DataTask/internal/repository/user_repository"
+	"DataTask/internal/usecase/user_usecase"
 	"DataTask/pkg/logger"
+	"database/sql"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
@@ -27,4 +31,11 @@ func InitializeSwaggerHandler(cfg *config.Config, instanceName string) gin.Handl
 		ginSwagger.DefaultModelsExpandDepth(-1),
 		ginSwagger.PersistAuthorization(true),
 	)
+}
+
+func InitializeUsersHandler(db *sql.DB, jwtSecretKey string) *users_handler.UsersHandler {
+	repo := user_repository.NewPostgresUserRepository(db)
+	useCase := user_usecase.NewUserUseCase(repo)
+	handler := users_handler.NewUsersHandler(useCase, jwtSecretKey)
+	return handler
 }
