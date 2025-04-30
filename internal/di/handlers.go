@@ -29,14 +29,14 @@ func InitializePrometheusHandler() gin.HandlerFunc {
 
 func InitializeSwaggerHandler(cfg *config.Config, instanceName string) gin.HandlerFunc {
 	logger.Log.WithFields(log.Fields{
-		"base_path": cfg.Swagger.BasePath,
+		"base_path": "/api/v1",
 		"version":   cfg.Swagger.Version,
 	}).Info("set up swagger")
 
 	return ginSwagger.WrapHandler(
 		swaggerFiles.Handler,
 		ginSwagger.InstanceName(instanceName),
-		ginSwagger.URL("/docs/v1/swagger.json"), //  !!!  ИЗМЕНЕНО !!!
+		ginSwagger.URL("/docs/swagger.json"), //  !!!  ИЗМЕНЕНО !!!
 		ginSwagger.DefaultModelsExpandDepth(-1),
 		ginSwagger.PersistAuthorization(true),
 	)

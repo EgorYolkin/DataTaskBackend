@@ -1,8 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "Task manager",
+        "title": "DataTask",
+        "contact": {},
+        "version": "1.0"
     },
+    "basePath": "/api/v1",
     "paths": {
         "/kanban": {
             "post": {
@@ -279,7 +283,7 @@
                 }
             }
         },
-        "/projects": {
+        "/project": {
             "post": {
                 "description": "Create a new project",
                 "consumes": [
@@ -299,7 +303,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Project"
+                            "$ref": "#/definitions/project_handler.HandleCreateProjectParam"
                         }
                     }
                 ],
@@ -337,7 +341,7 @@
                 }
             }
         },
-        "/projects/{id}": {
+        "/project/{id}": {
             "get": {
                 "description": "Get a project by its ID",
                 "produces": [
@@ -498,63 +502,7 @@
                 }
             }
         },
-        "/projects/{parent_project_id}/subprojects": {
-            "get": {
-                "description": "Get all subprojects of a project",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Project"
-                ],
-                "summary": "Get Subprojects",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Parent Project ID",
-                        "name": "parent_project_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.JSONResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.Project"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/{project_id}/accept": {
+        "/project/{project_id}/accept": {
             "post": {
                 "description": "Accept an invitation to join a project",
                 "produces": [
@@ -595,7 +543,7 @@
                 }
             }
         },
-        "/projects/{project_id}/invite": {
+        "/project/{project_id}/invite": {
             "post": {
                 "description": "Invite a user to a project with specific permissions",
                 "consumes": [
@@ -631,6 +579,184 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/project/{project_id}/users": {
+            "get": {
+                "description": "Get all users and their permissions in a project",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Get Users in Project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.ProjectUser"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/project/{project_id}/users/{user_id}/permissions": {
+            "get": {
+                "description": "Get the permissions of a user in a project",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Get User Permissions for Project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/project_subprojects/{parent_project_id}": {
+            "get": {
+                "description": "Get all subprojects of a project",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Get Subprojects",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Parent Project ID",
+                        "name": "parent_project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.Project"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -704,129 +830,7 @@
                 }
             }
         },
-        "/projects/{project_id}/users": {
-            "get": {
-                "description": "Get all users and their permissions in a project",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Project"
-                ],
-                "summary": "Get Users in Project",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.JSONResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.ProjectUser"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/{project_id}/users/{user_id}/permissions": {
-            "get": {
-                "description": "Get the permissions of a user in a project",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Project"
-                ],
-                "summary": "Get User Permissions for Project",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.JSONResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tasks": {
+        "/task": {
             "post": {
                 "description": "Create a new Task",
                 "consumes": [
@@ -884,7 +888,7 @@
                 }
             }
         },
-        "/tasks/{id}": {
+        "/task/{id}": {
             "get": {
                 "description": "Get a Task by its ID",
                 "produces": [
@@ -1045,7 +1049,7 @@
                 }
             }
         },
-        "/tasks/{task_id}/assign": {
+        "/task/{task_id}/assign": {
             "post": {
                 "description": "Assign a user to a task",
                 "consumes": [
@@ -1102,7 +1106,7 @@
             }
         },
         "/user/create": {
-            "get": {
+            "post": {
                 "description": "create user",
                 "consumes": [
                     "application/json"
@@ -1160,7 +1164,7 @@
             }
         },
         "/user/delete": {
-            "get": {
+            "delete": {
                 "description": "delete user",
                 "consumes": [
                     "application/json"
@@ -1195,7 +1199,7 @@
             }
         },
         "/user/update": {
-            "get": {
+            "post": {
                 "description": "update user",
                 "consumes": [
                     "application/json"
@@ -1252,24 +1256,45 @@
                 }
             }
         },
-        "/users/login": {
-            "post": {
-                "description": "get user",
-                "consumes": [
-                    "application/json"
-                ],
+        "/user/{user_id}/tasks": {
+            "get": {
+                "description": "Get all tasks assigned to a user",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Task"
                 ],
-                "summary": "get user",
+                "summary": "Get Tasks by User ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.Task"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -1287,7 +1312,7 @@
                 }
             }
         },
-        "/users/{owner_id}/projects": {
+        "/user_projects/{owner_id}": {
             "get": {
                 "description": "Get all projects owned by a user",
                 "produces": [
@@ -1343,45 +1368,24 @@
                 }
             }
         },
-        "/users/{user_id}/tasks": {
-            "get": {
-                "description": "Get all tasks assigned to a user",
+        "/users/login": {
+            "post": {
+                "description": "get user",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Task"
+                    "User"
                 ],
-                "summary": "Get Tasks by User ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "get user",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.JSONResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.Task"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/response.JSONResponse"
                         }
                     },
                     "400": {
@@ -1405,6 +1409,7 @@
             "type": "object",
             "properties": {
                 "created_at": {
+                    "description": "Убрали CreatedAt и UpdatedAt из запроса на создание",
                     "type": "string"
                 },
                 "id": {
@@ -1425,6 +1430,7 @@
                     "type": "string"
                 },
                 "created_at": {
+                    "description": "Убрали CreatedAt и UpdatedAt из запроса на создание",
                     "type": "string"
                 },
                 "description": {
@@ -1443,6 +1449,7 @@
                     "type": "integer"
                 },
                 "updated_at": {
+                    "description": "omitempty, чтобы не возвращать null",
                     "type": "string"
                 }
             }
@@ -1488,6 +1495,7 @@
             "type": "object",
             "properties": {
                 "created_at": {
+                    "description": "Убрали CreatedAt и UpdatedAt из запроса на создание",
                     "type": "string"
                 },
                 "description": {
@@ -1530,6 +1538,28 @@
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "project_handler.HandleCreateProjectParam": {
+            "type": "object",
+            "required": [
+                "color",
+                "description",
+                "name"
+            ],
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent_project_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -1586,5 +1616,17 @@
                 }
             }
         }
-    }
+    },
+    "securityDefinitions": {
+        "Authorization": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "security": [
+        {
+            "Authorization": []
+        }
+    ]
 }

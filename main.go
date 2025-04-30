@@ -6,6 +6,16 @@ import (
 	"DataTask/pkg/logger"
 )
 
+// @title           DataTask
+// @version         1.0
+// @description     Task manager
+// @BasePath        /api/v1
+
+// @securityDefinitions.apikey Authorization
+// @in header
+// @name Authorization
+
+// @security Authorization
 func main() {
 	logger.InitLogger()
 

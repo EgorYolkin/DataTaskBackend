@@ -40,7 +40,7 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	taskHandler := InitializeTaskHandler(db)
 	projectHandler := InitializeProjectHandler(db)
 
-	authMiddleware := auth_middleware.NewAuthMiddleware(cfg.JWT.Secret)
+	authMiddleware := InitializeAuthMiddleware(db, cfg.JWT.Secret)
 
 	return &App{
 		Config: cfg,

@@ -1,18 +1,22 @@
 package auth_middleware
 
 import (
+	"DataTask/internal/usecase/user_usecase"
 	"DataTask/pkg/http/response"
 	"DataTask/pkg/jwt"
 	"github.com/gin-gonic/gin"
+	jwtLib "github.com/golang-jwt/jwt/v5"
 	"net/http"
 )
 
 type AuthMiddleware struct {
 	jwtSecretKey string
+	useCase      user_usecase.UserUseCase
 }
 
-func NewAuthMiddleware(jwtSecretKey string) *AuthMiddleware {
+func NewAuthMiddleware(useCase user_usecase.UserUseCase, jwtSecretKey string) *AuthMiddleware {
 	return &AuthMiddleware{
+		useCase:      useCase,
 		jwtSecretKey: jwtSecretKey,
 	}
 }
@@ -43,7 +47,13 @@ func (m *AuthMiddleware) Middleware() gin.HandlerFunc {
 			return
 		}
 
+		userEmail := claims.(jwtLib.MapClaims)["user_email"].(string)
+
+		u, _ := m.useCase.GetUserEntityByEmail(ctx, userEmail)
+
 		ctx.Set("user", claims)
+		ctx.Set("user_email", userEmail)
+		ctx.Set("user_id", u.ID)
 
 		ctx.Next()
 	}

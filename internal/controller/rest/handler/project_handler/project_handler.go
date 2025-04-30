@@ -18,31 +18,60 @@ func NewProjectHandler(useCase project_usecase.ProjectUseCase) *ProjectHandler {
 	return &ProjectHandler{useCase: useCase}
 }
 
+type HandleCreateProjectParam struct {
+	Name            string `json:"name" binding:"required"`
+	Description     string `json:"description" binding:"required"`
+	Color           string `json:"color" binding:"required"`
+	ParentProjectID *int   `json:"parent_project_id,omitempty"`
+}
+
 // HandleCreateProject
 // @Summary Create Project
 // @Description Create a new project
 // @Tags Project
 // @Accept json
 // @Produce json
-// @Param request body dto.Project true "Project data"
+// @Param request body HandleCreateProjectParam true "Project data"
 // @Success 201 {object} response.JSONResponse{data=dto.Project}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /projects [post]
+// @Router /project [post]
 func (h *ProjectHandler) HandleCreateProject(ctx *gin.Context) {
-	var project dto.Project
-	if err := ctx.ShouldBindJSON(&project); err != nil {
+	var param HandleCreateProjectParam
+	if err := ctx.ShouldBindJSON(&param); err != nil {
 		response.JSON(ctx, http.StatusBadRequest, false, nil, err.Error())
 		return
 	}
 
-	createdProject, err := h.useCase.CreateProject(ctx, &project)
+	authUserID := ctx.GetInt("user_id")
+
+	project := dto.Project{
+		Name:            param.Name,
+		Description:     param.Description,
+		Color:           param.Color,
+		ParentProjectID: param.ParentProjectID,
+		OwnerID:         authUserID,
+	}
+
+	createdProject, err := h.useCase.CreateProject(ctx, &project) //  UseCase должен вернуть entity
 	if err != nil {
 		response.JSON(ctx, http.StatusInternalServerError, false, nil, err.Error())
 		return
 	}
 
-	response.JSON(ctx, http.StatusCreated, true, createdProject, "")
+	//  Преобразуем entity в dto,  чтобы вернуть клиенту,  и устанавливаем CreatedAt
+	responseProject := dto.Project{
+		ID:              createdProject.ID,
+		OwnerID:         createdProject.OwnerID,
+		Name:            createdProject.Name,
+		Description:     createdProject.Description,
+		Color:           createdProject.Color,
+		ParentProjectID: createdProject.ParentProjectID,
+		CreatedAt:       createdProject.CreatedAt,
+		UpdatedAt:       createdProject.UpdatedAt,
+	}
+
+	response.JSON(ctx, http.StatusCreated, true, responseProject, "")
 }
 
 // HandleGetProjectByID
@@ -55,7 +84,7 @@ func (h *ProjectHandler) HandleCreateProject(ctx *gin.Context) {
 // @Failure 400 {object} response.JSONResponse
 // @Failure 404 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /projects/{id} [get]
+// @Router /project/{id} [get]
 func (h *ProjectHandler) HandleGetProjectByID(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -88,7 +117,7 @@ func (h *ProjectHandler) HandleGetProjectByID(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse{data=dto.Project}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /projects/{id} [put]
+// @Router /project/{id} [put]
 func (h *ProjectHandler) HandleUpdateProject(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -122,7 +151,7 @@ func (h *ProjectHandler) HandleUpdateProject(ctx *gin.Context) {
 // @Success 204 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /projects/{id} [delete]
+// @Router /project/{id} [delete]
 func (h *ProjectHandler) HandleDeleteProject(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -149,7 +178,7 @@ func (h *ProjectHandler) HandleDeleteProject(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse{data=[]dto.Project}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /users/{owner_id}/projects [get]
+// @Router /user_projects/{owner_id} [get]
 func (h *ProjectHandler) HandleGetProjectsByOwnerID(ctx *gin.Context) {
 	ownerIDStr := ctx.Param("owner_id")
 	ownerID, err := strconv.Atoi(ownerIDStr)
@@ -176,7 +205,7 @@ func (h *ProjectHandler) HandleGetProjectsByOwnerID(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse{data=[]dto.Project}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /projects/{parent_project_id}/subprojects [get]
+// @Router /project_subprojects/{parent_project_id} [get]
 func (h *ProjectHandler) HandleGetSubprojects(ctx *gin.Context) {
 	parentProjectIDStr := ctx.Param("parent_project_id")
 	parentProjectID, err := strconv.Atoi(parentProjectIDStr)
@@ -205,7 +234,7 @@ func (h *ProjectHandler) HandleGetSubprojects(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /projects/{project_id}/invite [post]
+// @Router /project/{project_id}/invite [post]
 func (h *ProjectHandler) HandleInviteUserToProject(ctx *gin.Context) {
 	projectIDStr := ctx.Param("project_id")
 	projectID, err := strconv.Atoi(projectIDStr)
@@ -246,7 +275,7 @@ func (h *ProjectHandler) HandleInviteUserToProject(ctx *gin.Context) {
 // @Failure 400 {object} response.JSONResponse
 // @Failure 404 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /projects/{project_id}/users/{user_id}/permissions [get]
+// @Router /project/{project_id}/users/{user_id}/permissions [get]
 func (h *ProjectHandler) HandleGetUserPermissionsForProject(ctx *gin.Context) {
 	projectIDStr := ctx.Param("project_id")
 	projectID, err := strconv.Atoi(projectIDStr)
@@ -284,7 +313,7 @@ func (h *ProjectHandler) HandleGetUserPermissionsForProject(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse{data=[]dto.ProjectUser}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /projects/{project_id}/users [get]
+// @Router /project/{project_id}/users [get]
 func (h *ProjectHandler) HandleGetUsersInProject(ctx *gin.Context) {
 	projectIDStr := ctx.Param("project_id")
 	projectID, err := strconv.Atoi(projectIDStr)
@@ -311,7 +340,7 @@ func (h *ProjectHandler) HandleGetUsersInProject(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /projects/{project_id}/accept [post]
+// @Router /project/{project_id}/accept [post]
 func (h *ProjectHandler) HandleAcceptProjectInvitation(ctx *gin.Context) {
 	projectIDStr := ctx.Param("project_id")
 	projectID, err := strconv.Atoi(projectIDStr)

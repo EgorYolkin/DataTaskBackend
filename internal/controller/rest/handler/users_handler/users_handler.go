@@ -46,7 +46,7 @@ type CreateUserRequestParam struct {
 // @Success 200 {object} response.JSONResponse{data=dto.User}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /user/create [get]
+// @Router /user/create [post]
 func (h *UsersHandler) HandleCreateUser(ctx *gin.Context) {
 	var param CreateUserRequestParam
 
@@ -98,7 +98,7 @@ func (h *UsersHandler) HandleCreateUser(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse{data=dto.User}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /user/update [get]
+// @Router /user/update [post]
 func (h *UsersHandler) HandleUpdateUser(ctx *gin.Context) {
 	var user dto.User
 
@@ -125,7 +125,7 @@ func (h *UsersHandler) HandleUpdateUser(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /user/delete [get]
+// @Router /user/delete [delete]
 func (h *UsersHandler) HandleDeleteUser(ctx *gin.Context) {
 	uid := ctx.GetInt("user_id")
 
@@ -209,7 +209,7 @@ func (h *UsersHandler) LoginUserHandler(ctx *gin.Context) {
 // HandleGetCurrentUser handles the HTTP POST request to get user
 // @Summary get user
 // @Description get user
-// @Tags users
+// @Tags User
 // @Accept json
 // @Produce json
 // @Success 200 {object} response.JSONResponse

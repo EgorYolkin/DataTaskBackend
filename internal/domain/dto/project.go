@@ -3,14 +3,15 @@ package dto
 import "time"
 
 type Project struct {
-	ID              int       `json:"id"`
-	OwnerID         int       `json:"owner_id"`
-	Name            string    `json:"name"`
-	Description     string    `json:"description"`
-	Color           string    `json:"color"`
-	ParentProjectID *int      `json:"parent_project_id"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	ID              int    `json:"id"`
+	OwnerID         int    `json:"owner_id"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	Color           string `json:"color"`
+	ParentProjectID *int   `json:"parent_project_id"`
+	//  Убрали CreatedAt и UpdatedAt из запроса на создание
+	CreatedAt time.Time `json:"created_at,omitempty"` //  omitempty, чтобы не возвращать null
+	UpdatedAt time.Time `json:"updated_at,omitempty"` //  omitempty, чтобы не возвращать null
 }
 
 type ProjectUser struct {

@@ -27,7 +27,7 @@ func NewTaskHandler(useCase task_usecase.TaskUseCase) *TaskHandler {
 // @Success 201 {object} response.JSONResponse{data=dto.Task}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /tasks [post]
+// @Router /task [post]
 func (h *TaskHandler) HandleCreateTask(ctx *gin.Context) {
 	var task dto.Task
 	if err := ctx.ShouldBindJSON(&task); err != nil {
@@ -54,7 +54,7 @@ func (h *TaskHandler) HandleCreateTask(ctx *gin.Context) {
 // @Failure 400 {object} response.JSONResponse
 // @Failure 404 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /tasks/{id} [get]
+// @Router /task/{id} [get]
 func (h *TaskHandler) HandleGetTaskByID(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -87,7 +87,7 @@ func (h *TaskHandler) HandleGetTaskByID(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse{data=dto.Task}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /tasks/{id} [put]
+// @Router /task/{id} [put]
 func (h *TaskHandler) HandleUpdateTask(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -121,7 +121,7 @@ func (h *TaskHandler) HandleUpdateTask(ctx *gin.Context) {
 // @Success 204 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /tasks/{id} [delete]
+// @Router /task/{id} [delete]
 func (h *TaskHandler) HandleDeleteTask(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -175,7 +175,7 @@ func (h *TaskHandler) HandleGetTasksByKanbanID(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse{data=[]dto.Task}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /users/{user_id}/tasks [get]
+// @Router /user/{user_id}/tasks [get]
 func (h *TaskHandler) HandleGetTasksByUserID(ctx *gin.Context) {
 	userIDStr := ctx.Param("user_id")
 	userID, err := strconv.Atoi(userIDStr)
@@ -204,7 +204,7 @@ func (h *TaskHandler) HandleGetTasksByUserID(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /tasks/{task_id}/assign [post]
+// @Router /task/{task_id}/assign [post]
 func (h *TaskHandler) HandleAssignUserToTask(ctx *gin.Context) {
 	taskIDStr := ctx.Param("task_id")
 	taskID, err := strconv.Atoi(taskIDStr)

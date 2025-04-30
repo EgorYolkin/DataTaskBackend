@@ -66,3 +66,169 @@ time="2025-04-30 00:53:48" level=info msg=host
 time="2025-04-30 00:53:48" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
 time="2025-04-30 00:53:48" level=info msg="set up swagger" base_path=/api/v1 version=1
 time="2025-04-30 00:53:48" level=info msg="running app" host= port=8080
+time="2025-04-30 00:56:26" level=info msg="Starting DataTask"
+time="2025-04-30 00:56:26" level=info msg=secret
+time="2025-04-30 00:56:26" level=info msg=host
+time="2025-04-30 00:56:26" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 00:56:26" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 00:56:26" level=info msg="running app" host= port=8080
+time="2025-04-30 00:57:29" level=info msg="Starting DataTask"
+time="2025-04-30 00:57:29" level=info msg=secret
+time="2025-04-30 00:57:29" level=info msg=host
+time="2025-04-30 00:57:29" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 00:57:29" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 00:57:29" level=info msg="running app" host= port=8080
+time="2025-04-30 00:58:50" level=info msg="Starting DataTask"
+time="2025-04-30 00:58:50" level=info msg=secret
+time="2025-04-30 00:58:50" level=info msg=host
+time="2025-04-30 00:58:50" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 00:58:50" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 00:58:50" level=info msg="running app" host= port=8080
+time="2025-04-30 00:59:16" level=info msg="Starting DataTask"
+time="2025-04-30 00:59:16" level=info msg=secret
+time="2025-04-30 00:59:16" level=info msg=host
+time="2025-04-30 00:59:16" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 00:59:16" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 00:59:16" level=info msg="running app" host= port=8080
+time="2025-04-30 00:59:54" level=error msg="401 POST /api/v1/projects/"
+time="2025-04-30 01:00:02" level=error msg="401 POST /api/v1/projects/"
+time="2025-04-30 01:03:03" level=info msg="Starting DataTask"
+time="2025-04-30 01:03:03" level=info msg=secret
+time="2025-04-30 01:03:03" level=info msg=host
+time="2025-04-30 01:03:03" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 01:03:03" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 01:03:03" level=info msg="running app" host= port=8080
+time="2025-04-30 01:03:49" level=error msg="401 POST /api/v1/kanban/"
+time="2025-04-30 01:07:00" level=info msg="Starting DataTask"
+time="2025-04-30 01:07:01" level=info msg=secret
+time="2025-04-30 01:07:01" level=info msg=host
+time="2025-04-30 01:07:01" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 01:07:01" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 01:07:01" level=info msg="running app" host= port=8080
+time="2025-04-30 01:07:46" level=info msg="Starting DataTask"
+time="2025-04-30 01:07:46" level=info msg=secret
+time="2025-04-30 01:07:46" level=info msg=host
+time="2025-04-30 01:07:46" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 01:07:47" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 01:07:47" level=info msg="running app" host= port=8080
+time="2025-04-30 01:08:15" level=error msg="400 POST /api/v1/user/create"
+time="2025-04-30 01:08:37" level=error msg="400 POST /api/v1/user/create"
+time="2025-04-30 01:09:35" level=info msg="Starting DataTask"
+time="2025-04-30 01:09:35" level=info msg=secret
+time="2025-04-30 01:09:35" level=info msg=host
+time="2025-04-30 01:09:35" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 01:09:35" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 01:09:35" level=info msg="running app" host= port=8080
+time="2025-04-30 01:09:38" level=info msg="200 POST /api/v1/user/create"
+time="2025-04-30 01:09:58" level=error msg="500 GET /api/v1/kanban/1"
+time="2025-04-30 01:10:11" level=error msg="500 GET /api/v1/kanban/1"
+time="2025-04-30 01:10:14" level=error msg="500 GET /api/v1/kanban/0"
+time="2025-04-30 01:10:38" level=error msg="400 POST /api/v1/kanban/"
+time="2025-04-30 01:16:51" level=error msg="400 POST /api/v1/task/1/assign"
+time="2025-04-30 01:16:53" level=error msg="400 POST /api/v1/task/1/assign"
+time="2025-04-30 01:17:04" level=error msg="500 POST /api/v1/task/1/assign"
+time="2025-04-30 01:17:31" level=error msg="400 POST /api/v1/project/"
+time="2025-04-30 01:17:44" level=error msg="400 POST /api/v1/project/"
+time="2025-04-30 01:18:36" level=error msg="500 POST /api/v1/project/"
+time="2025-04-30 01:18:45" level=error msg="500 POST /api/v1/project/"
+time="2025-04-30 13:15:37" level=info msg="Starting DataTask"
+time="2025-04-30 13:15:37" level=info msg=secret
+time="2025-04-30 13:15:37" level=info msg=host
+time="2025-04-30 13:15:37" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:15:37" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:15:37" level=info msg="running app" host= port=8080
+time="2025-04-30 13:16:53" level=info msg="Starting DataTask"
+time="2025-04-30 13:16:53" level=info msg=secret
+time="2025-04-30 13:16:53" level=info msg=host
+time="2025-04-30 13:16:53" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:16:53" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:16:53" level=info msg="running app" host= port=8080
+time="2025-04-30 13:22:54" level=info msg="Starting DataTask"
+time="2025-04-30 13:22:54" level=info msg=secret
+time="2025-04-30 13:22:54" level=info msg=host
+time="2025-04-30 13:22:54" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:22:54" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:22:54" level=info msg="running app" host= port=8080
+time="2025-04-30 13:23:38" level=error msg="400 POST /api/v1/kanban/"
+time="2025-04-30 13:26:38" level=info msg="Starting DataTask"
+time="2025-04-30 13:26:38" level=info msg=secret
+time="2025-04-30 13:26:38" level=info msg=host
+time="2025-04-30 13:26:38" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:26:38" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:26:38" level=info msg="running app" host= port=8080
+time="2025-04-30 13:26:50" level=error msg="500 POST /api/v1/project/"
+time="2025-04-30 13:28:46" level=error msg="500 POST /api/v1/project/"
+time="2025-04-30 13:28:47" level=error msg="500 POST /api/v1/project/"
+time="2025-04-30 13:28:50" level=error msg="500 POST /api/v1/project/"
+time="2025-04-30 13:28:51" level=error msg="500 POST /api/v1/project/"
+time="2025-04-30 13:30:18" level=info msg="Starting DataTask"
+time="2025-04-30 13:30:18" level=info msg=secret
+time="2025-04-30 13:30:18" level=info msg=host
+time="2025-04-30 13:30:18" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:30:18" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:30:18" level=info msg="running app" host= port=8080
+time="2025-04-30 13:30:23" level=info msg="Starting DataTask"
+time="2025-04-30 13:30:23" level=info msg=secret
+time="2025-04-30 13:30:23" level=info msg=host
+time="2025-04-30 13:30:23" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:30:23" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:30:23" level=info msg="running app" host= port=8080
+time="2025-04-30 13:30:43" level=info msg="200 POST /api/v1/user/create"
+time="2025-04-30 13:31:16" level=error msg="500 POST /api/v1/project/"
+time="2025-04-30 13:33:33" level=info msg="Starting DataTask"
+time="2025-04-30 13:33:33" level=info msg=secret
+time="2025-04-30 13:33:33" level=info msg=host
+time="2025-04-30 13:33:33" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:33:33" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:33:33" level=info msg="running app" host= port=8080
+time="2025-04-30 13:34:46" level=info msg="Starting DataTask"
+time="2025-04-30 13:34:46" level=info msg=secret
+time="2025-04-30 13:34:46" level=info msg=host
+time="2025-04-30 13:34:46" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:34:46" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:34:46" level=info msg="running app" host= port=8080
+time="2025-04-30 13:34:48" level=info msg="map[exp:1.746088243e+09 iat:1.746001843e+09 sub:access user_email:string@string.string user_id:0]"
+time="2025-04-30 13:35:29" level=info msg="Starting DataTask"
+time="2025-04-30 13:35:29" level=info msg=secret
+time="2025-04-30 13:35:29" level=info msg=host
+time="2025-04-30 13:35:29" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:35:29" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:35:29" level=info msg="running app" host= port=8080
+time="2025-04-30 13:35:30" level=info msg="map[exp:1.746088243e+09 iat:1.746001843e+09 sub:access user_email:string@string.string user_id:0]"
+time="2025-04-30 13:35:30" level=info msg="map[exp:1.746088243e+09 iat:1.746001843e+09 sub:access user_email:string@string.string user_id:0]"
+time="2025-04-30 13:36:30" level=info msg="map[exp:1.746088243e+09 iat:1.746001843e+09 sub:access user_email:string@string.string user_id:0]"
+time="2025-04-30 13:36:30" level=info msg="map[exp:1.746088243e+09 iat:1.746001843e+09 sub:access user_email:string@string.string user_id:0]"
+time="2025-04-30 13:37:25" level=info msg="Starting DataTask"
+time="2025-04-30 13:37:25" level=info msg=secret
+time="2025-04-30 13:37:25" level=info msg=host
+time="2025-04-30 13:37:25" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:37:25" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:37:25" level=info msg="running app" host= port=8080
+time="2025-04-30 13:37:28" level=info msg="map[exp:1.746088243e+09 iat:1.746001843e+09 sub:access user_email:string@string.string user_id:0]"
+time="2025-04-30 13:37:28" level=info msg=0
+time="2025-04-30 13:43:52" level=info msg="Starting DataTask"
+time="2025-04-30 13:43:52" level=info msg=secret
+time="2025-04-30 13:43:52" level=info msg=host
+time="2025-04-30 13:43:52" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:43:52" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:43:52" level=info msg="running app" host= port=8080
+time="2025-04-30 13:43:56" level=info msg="201 POST /api/v1/project/"
+time="2025-04-30 13:44:00" level=info msg="201 POST /api/v1/project/"
+time="2025-04-30 13:44:01" level=info msg="201 POST /api/v1/project/"
+time="2025-04-30 13:44:35" level=info msg="200 GET /api/v1/project/2"
+time="2025-04-30 13:44:40" level=error msg="500 GET /api/v1/project/1"
+time="2025-04-30 13:44:43" level=info msg="200 GET /api/v1/project/3"
+time="2025-04-30 13:44:47" level=info msg="200 GET /api/v1/project/4"
+time="2025-04-30 13:44:49" level=error msg="500 GET /api/v1/project/5"
+time="2025-04-30 13:46:25" level=info msg="Starting DataTask"
+time="2025-04-30 13:46:25" level=info msg=secret
+time="2025-04-30 13:46:25" level=info msg=host
+time="2025-04-30 13:46:25" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:46:25" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:48:35" level=info msg="Starting DataTask"
+time="2025-04-30 13:48:35" level=info msg=secret
+time="2025-04-30 13:48:35" level=info msg=host
+time="2025-04-30 13:48:35" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 13:48:35" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 13:48:35" level=info msg="running app" host= port=8080
+time="2025-04-30 13:48:54" level=info msg="200 GET /api/v1/user_projects/1"

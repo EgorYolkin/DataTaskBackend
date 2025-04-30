@@ -1,12 +1,5 @@
 BEGIN;
 
-CREATE TABLE users
-(
-    id         SERIAL PRIMARY KEY,
-    email      VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now()
-);
-
 CREATE TABLE task
 (
     id           SERIAL PRIMARY KEY,
@@ -48,6 +41,15 @@ CREATE TABLE projects
     color       VARCHAR(255),
     created_at  TIMESTAMP WITHOUT TIME ZONE DEFAULT now()
 );
+
+ALTER TABLE projects
+    ADD COLUMN parent_project_id INTEGER REFERENCES projects (id) ON DELETE SET NULL;
+
+ALTER TABLE projects
+    ALTER COLUMN created_at SET DEFAULT now();
+
+ALTER TABLE projects
+    ADD COLUMN updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now();
 
 CREATE TABLE project_tasks
 (
