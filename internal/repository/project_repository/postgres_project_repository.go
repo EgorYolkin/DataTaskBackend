@@ -240,12 +240,13 @@ func (r *PostgresProjectRepository) GetUserPermissionsForProject(ctx context.Con
 	return permission, nil
 }
 
-func (r *PostgresProjectRepository) GetUsersInProject(ctx context.Context, projectID int) ([]*entity.ProjectUser, error) {
+func (r *PostgresProjectRepository) GetUsersInProject(ctx context.Context, projectID int) ([]*entity.User, error) {
 	q := fmt.Sprintf(`
-        SELECT project_id, user_id, permission, invited_by_user_id, invited_at, joined_at
-        FROM %s
-        WHERE project_id = $1;
-    `, database.ProjectUsersTable)
+		SELECT u.id, u.name, u.surname, u.email, u.avatar_url, u.created_at, u.updated_at
+		FROM %s pu
+		JOIN users u ON pu.user_id = u.id
+		WHERE pu.project_id = $1;
+	`, database.ProjectUsersTable)
 
 	rows, err := r.db.QueryContext(ctx, q, projectID)
 	if err != nil {
@@ -253,20 +254,20 @@ func (r *PostgresProjectRepository) GetUsersInProject(ctx context.Context, proje
 	}
 	defer rows.Close()
 
-	var projectUsers []*entity.ProjectUser
+	var users []*entity.User
 	for rows.Next() {
-		var pu entity.ProjectUser
+		var u entity.User
 		if err := rows.Scan(
-			&pu.ProjectID, &pu.UserID, &pu.Permission, &pu.InvitedByUserID, &pu.InvitedAt, &pu.JoinedAt,
+			&u.ID, &u.Name, &u.Surname, &u.Email, &u.AvatarURL, &u.CreatedAt, &u.UpdatedAt,
 		); err != nil {
-			return nil, fmt.Errorf("scan project user: %w", err)
+			return nil, fmt.Errorf("scan user: %w", err)
 		}
-		projectUsers = append(projectUsers, &pu)
+		users = append(users, &u)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("rows error: %w", err)
 	}
-	return projectUsers, nil
+	return users, nil
 }
 
 func (r *PostgresProjectRepository) AcceptProjectInvitation(ctx context.Context, projectID int, userID int) error {

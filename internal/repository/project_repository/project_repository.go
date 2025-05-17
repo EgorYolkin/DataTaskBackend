@@ -17,6 +17,6 @@ type ProjectRepository interface {
 
 	InviteUserToProject(ctx context.Context, projectUser *entity.ProjectUser) error
 	GetUserPermissionsForProject(ctx context.Context, projectID int, userID int) (string, error)
-	GetUsersInProject(ctx context.Context, projectID int) ([]*entity.ProjectUser, error)
+	GetUsersInProject(ctx context.Context, projectID int) ([]*entity.User, error)
 	AcceptProjectInvitation(ctx context.Context, projectID int, userID int) error
 }

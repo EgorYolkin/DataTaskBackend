@@ -24,7 +24,7 @@ type ProjectUser struct {
 }
 
 type ProjectUserInvite struct {
-	ProjectID  int    `json:"project_id" binding:"required"`
+	ProjectID  int    `json:"project_id"`
 	UserID     int    `json:"user_id"`
 	Permission string `json:"permission"`
 }

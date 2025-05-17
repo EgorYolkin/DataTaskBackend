@@ -103,12 +103,13 @@ func (r *PostgresTaskRepository) GetTasksByKanbanID(ctx context.Context, kanbanI
 }
 
 func (r *PostgresTaskRepository) GetTasksByUserID(ctx context.Context, userID int) ([]*entity.Task, error) {
-	q := fmt.Sprintf(`
-        SELECT t.id, t.title, t.description, t.is_completed, t.created_at, t.updated_at
-        FROM %s tu
-        JOIN %s t ON tu.task_id = t.id
-        WHERE tu.user_id = $1;
-    `, database.TaskUsersTable, database.TaskTable) // Define TaskUsersTable and TaskTable
+	q := `
+        SELECT DISTINCT t.id, t.title, t.description, t.is_completed, t.created_at, t.updated_at
+        FROM task t
+        LEFT JOIN kanban k ON t.kanban_id = k.id
+        LEFT JOIN projects p ON k.project_id = p.id
+        WHERE p.owner_id = $1 OR t.kanban_id IS NULL;
+    `
 
 	rows, err := r.db.QueryContext(ctx, q, userID)
 	if err != nil {

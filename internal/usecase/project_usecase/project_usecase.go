@@ -17,6 +17,6 @@ type ProjectUseCase interface {
 
 	InviteUserToProject(ctx context.Context, invite *dto.ProjectUserInvite, invitedByUserID int) error
 	GetUserPermissionsForProject(ctx context.Context, projectID int, userID int) (string, error)
-	GetUsersInProject(ctx context.Context, projectID int) ([]*dto.ProjectUser, error)
+	GetUsersInProject(ctx context.Context, projectID int) ([]*dto.User, error)
 	AcceptProjectInvitation(ctx context.Context, projectID int, userID int) error
 }

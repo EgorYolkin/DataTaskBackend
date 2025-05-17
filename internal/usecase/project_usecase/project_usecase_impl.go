@@ -217,21 +217,21 @@ func (uc *ProjectUseCaseImpl) GetUserPermissionsForProject(ctx context.Context, 
 	return permission, nil
 }
 
-func (uc *ProjectUseCaseImpl) GetUsersInProject(ctx context.Context, projectID int) ([]*dto.ProjectUser, error) {
+func (uc *ProjectUseCaseImpl) GetUsersInProject(ctx context.Context, projectID int) ([]*dto.User, error) {
 	projectUsers, err := uc.repo.GetUsersInProject(ctx, projectID)
 	if err != nil {
 		return nil, err
 	}
 
-	var dtoProjectUsers []*dto.ProjectUser
-	for _, pu := range projectUsers {
-		dtoProjectUsers = append(dtoProjectUsers, &dto.ProjectUser{
-			ProjectID:       pu.ProjectID,
-			UserID:          pu.UserID,
-			Permission:      pu.Permission,
-			InvitedByUserID: pu.InvitedByUserID,
-			InvitedAt:       pu.InvitedAt,
-			JoinedAt:        pu.JoinedAt,
+	var dtoProjectUsers []*dto.User
+	for _, u := range projectUsers {
+		dtoProjectUsers = append(dtoProjectUsers, &dto.User{
+			ID: u.ID,
+
+			Name:      u.Name,
+			Surname:   u.Surname,
+			Email:     u.Email,
+			AvatarURL: u.AvatarURL,
 		})
 	}
 	return dtoProjectUsers, nil
