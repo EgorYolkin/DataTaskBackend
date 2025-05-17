@@ -1,0 +1,55 @@
+time="2025-05-05 15:44:47" level=info msg="Starting DataTask"
+time="2025-05-05 15:44:47" level=info msg=secret
+time="2025-05-05 15:44:47" level=info msg=host
+time="2025-05-05 15:44:47" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-05-05 15:57:22" level=info msg="Starting DataTask"
+time="2025-05-05 15:57:22" level=info msg=secret
+time="2025-05-05 15:57:22" level=info msg=host
+time="2025-05-05 15:57:22" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-05-05 15:57:25" level=warning msg="DB not ready (attempt 1/10), retrying in 2s..."
+time="2025-05-05 15:57:29" level=warning msg="DB not ready (attempt 2/10), retrying in 2s..."
+time="2025-05-05 15:57:32" level=warning msg="DB not ready (attempt 3/10), retrying in 2s..."
+time="2025-05-05 15:57:37" level=warning msg="DB not ready (attempt 4/10), retrying in 2s..."
+time="2025-05-05 15:57:40" level=warning msg="DB not ready (attempt 5/10), retrying in 2s..."
+time="2025-05-05 15:57:43" level=warning msg="DB not ready (attempt 6/10), retrying in 2s..."
+time="2025-05-05 15:57:48" level=warning msg="DB not ready (attempt 7/10), retrying in 2s..."
+time="2025-05-05 15:57:51" level=warning msg="DB not ready (attempt 8/10), retrying in 2s..."
+time="2025-05-05 15:57:55" level=warning msg="DB not ready (attempt 9/10), retrying in 2s..."
+time="2025-05-05 15:57:59" level=warning msg="DB not ready (attempt 10/10), retrying in 2s..."
+time="2025-05-05 15:58:01" level=error msg="database not available after 10 attempts: read tcp [::1]:57996->[::1]:5432: read: connection reset by peer"
+time="2025-05-05 15:58:02" level=info msg="Starting DataTask"
+time="2025-05-05 15:58:02" level=info msg=secret
+time="2025-05-05 15:58:02" level=info msg=host
+time="2025-05-05 15:58:02" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-05-05 15:58:05" level=warning msg="DB not ready (attempt 1/10), retrying in 2s..."
+time="2025-05-05 15:58:09" level=warning msg="DB not ready (attempt 2/10), retrying in 2s..."
+time="2025-05-05 15:58:12" level=warning msg="DB not ready (attempt 3/10), retrying in 2s..."
+time="2025-05-05 15:58:16" level=warning msg="DB not ready (attempt 4/10), retrying in 2s..."
+time="2025-05-05 15:58:19" level=warning msg="DB not ready (attempt 5/10), retrying in 2s..."
+time="2025-05-05 15:58:22" level=warning msg="DB not ready (attempt 6/10), retrying in 2s..."
+time="2025-05-05 15:58:27" level=warning msg="DB not ready (attempt 7/10), retrying in 2s..."
+time="2025-05-05 15:58:30" level=warning msg="DB not ready (attempt 8/10), retrying in 2s..."
+time="2025-05-05 16:01:48" level=info msg="Starting DataTask"
+time="2025-05-05 16:01:48" level=info msg=secret
+time="2025-05-05 16:01:48" level=info msg=host
+time="2025-05-05 16:01:48" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-05-05 16:01:48" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-05-05 16:01:48" level=info msg="running app" host= port=8080
+time="2025-05-05 16:01:48" level=error msg="listen tcp :8080: bind: address already in use"
+time="2025-05-05 16:02:09" level=info msg="Starting DataTask"
+time="2025-05-05 16:02:09" level=info msg=secret
+time="2025-05-05 16:02:09" level=info msg=host
+time="2025-05-05 16:02:09" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-05-05 16:02:09" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-05-05 16:02:09" level=info msg="running app" host= port=8080
+time="2025-05-05 16:02:14" level=info msg="200 POST /api/v1/user/create"
+time="2025-05-05 16:03:06" level=info msg="200 POST /api/v1/user/create"
+time="2025-05-05 16:03:07" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 16:03:14" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 16:03:14" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 16:03:28" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 16:03:33" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 16:03:41" level=info msg="200 POST /api/v1/user/create"
+time="2025-05-05 16:03:46" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 16:04:18" level=info msg="200 POST /api/v1/user/create"
+time="2025-05-11 15:08:23" level=info msg="200 GET /api/v1/user_projects/1"

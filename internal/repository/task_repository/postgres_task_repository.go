@@ -18,12 +18,12 @@ func NewPostgresTaskRepository(db *sql.DB) *PostgresTaskRepository {
 
 func (r *PostgresTaskRepository) CreateTask(ctx context.Context, task *entity.Task) (*entity.Task, error) {
 	q := fmt.Sprintf(`
-        INSERT INTO %s (title, description, is_completed) VALUES ($1, $2, $3) 
-        RETURNING id, title, description, is_completed, created_at, updated_at;
+        INSERT INTO %s (title, description, is_completed, kanban_id) VALUES ($1, $2, $3, $4) 
+        RETURNING id, title, description, is_completed, created_at, updated_at, kanban_id;
     `, database.TaskTable) // Define TaskTable in your database package
 
-	err := r.db.QueryRowContext(ctx, q, task.Title, task.Description, task.IsCompleted).Scan(
-		&task.ID, &task.Title, &task.Description, &task.IsCompleted, &task.CreatedAt, &task.UpdatedAt,
+	err := r.db.QueryRowContext(ctx, q, task.Title, task.Description, task.IsCompleted, task.KanbanID).Scan(
+		&task.ID, &task.Title, &task.Description, &task.IsCompleted, &task.CreatedAt, &task.UpdatedAt, &task.KanbanID,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("create task: %w", err)
@@ -75,12 +75,12 @@ func (r *PostgresTaskRepository) DeleteTask(ctx context.Context, id int) error {
 }
 
 func (r *PostgresTaskRepository) GetTasksByKanbanID(ctx context.Context, kanbanID int) ([]*entity.Task, error) {
+	fmt.Println("GetTasksByKanbanID", kanbanID)
 	q := fmt.Sprintf(`
-        SELECT t.id, t.title, t.description, t.is_completed, t.created_at, t.updated_at
-        FROM %s kt
-        JOIN %s t ON kt.task_id = t.id
-        WHERE kt.kanban_id = $1;
-    `, database.KanbanTasksTable, database.TaskTable) // Define KanbanTasksTable and TaskTable
+        SELECT id, title, description, is_completed, created_at, updated_at, kanban_id
+        FROM %s 
+        WHERE kanban_id = $1;
+    `, database.TaskTable)
 
 	rows, err := r.db.QueryContext(ctx, q, kanbanID)
 	if err != nil {
@@ -91,7 +91,7 @@ func (r *PostgresTaskRepository) GetTasksByKanbanID(ctx context.Context, kanbanI
 	var tasks []*entity.Task
 	for rows.Next() {
 		var t entity.Task
-		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.IsCompleted, &t.CreatedAt, &t.UpdatedAt); err != nil {
+		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.IsCompleted, &t.CreatedAt, &t.UpdatedAt, &t.KanbanID); err != nil {
 			return nil, fmt.Errorf("scan task: %w", err)
 		}
 		tasks = append(tasks, &t)

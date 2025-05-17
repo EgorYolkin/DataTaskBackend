@@ -5,7 +5,6 @@ import (
 	"DataTask/internal/usecase/project_usecase"
 	"DataTask/pkg/http/response"
 	"github.com/gin-gonic/gin"
-	jwtLib "github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"strconv"
 )
@@ -21,7 +20,7 @@ func NewProjectHandler(useCase project_usecase.ProjectUseCase) *ProjectHandler {
 type HandleCreateProjectParam struct {
 	Name            string `json:"name" binding:"required"`
 	Description     string `json:"description" binding:"required"`
-	Color           string `json:"color" binding:"required"`
+	Color           string `json:"color"`
 	ParentProjectID *int   `json:"parent_project_id,omitempty"`
 }
 
@@ -53,13 +52,13 @@ func (h *ProjectHandler) HandleCreateProject(ctx *gin.Context) {
 		OwnerID:         authUserID,
 	}
 
-	createdProject, err := h.useCase.CreateProject(ctx, &project) //  UseCase должен вернуть entity
+	createdProject, err := h.useCase.CreateProject(ctx, &project) // UseCase должен вернуть entity
 	if err != nil {
 		response.JSON(ctx, http.StatusInternalServerError, false, nil, err.Error())
 		return
 	}
 
-	//  Преобразуем entity в dto,  чтобы вернуть клиенту,  и устанавливаем CreatedAt
+	// Преобразуем entity в dto, чтобы вернуть клиенту, и устанавливаем CreatedAt
 	responseProject := dto.Project{
 		ID:              createdProject.ID,
 		OwnerID:         createdProject.OwnerID,
@@ -196,6 +195,33 @@ func (h *ProjectHandler) HandleGetProjectsByOwnerID(ctx *gin.Context) {
 	response.JSON(ctx, http.StatusOK, true, projects, "")
 }
 
+// HandleGetSharedProjectsByOwnerID
+// @Summary Get Projects by Owner ID
+// @Description Get all projects owned by a user
+// @Tags Project
+// @Produce json
+// @Param owner_id path int true "Owner User ID"
+// @Success 200 {object} response.JSONResponse{data=[]dto.Project}
+// @Failure 400 {object} response.JSONResponse
+// @Failure 500 {object} response.JSONResponse
+// @Router /user_shared_projects/{owner_id} [get]
+func (h *ProjectHandler) HandleGetSharedProjectsByOwnerID(ctx *gin.Context) {
+	ownerIDStr := ctx.Param("owner_id")
+	ownerID, err := strconv.Atoi(ownerIDStr)
+	if err != nil {
+		response.JSON(ctx, http.StatusBadRequest, false, nil, "Invalid Owner User ID")
+		return
+	}
+
+	projects, err := h.useCase.GetSharedProjectsByOwnerID(ctx, ownerID)
+	if err != nil {
+		response.JSON(ctx, http.StatusInternalServerError, false, nil, err.Error())
+		return
+	}
+
+	response.JSON(ctx, http.StatusOK, true, projects, "")
+}
+
 // HandleGetSubprojects
 // @Summary Get Subprojects
 // @Description Get all subprojects of a project
@@ -229,33 +255,23 @@ func (h *ProjectHandler) HandleGetSubprojects(ctx *gin.Context) {
 // @Tags Project
 // @Accept json
 // @Produce json
-// @Param project_id path int true "Project ID"
 // @Param request body dto.ProjectUserInvite true "User invitation details"
 // @Success 200 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /project/{project_id}/invite [post]
+// @Router /project_users/{project_id}/invite [post]
 func (h *ProjectHandler) HandleInviteUserToProject(ctx *gin.Context) {
-	projectIDStr := ctx.Param("project_id")
-	projectID, err := strconv.Atoi(projectIDStr)
-	if err != nil {
-		response.JSON(ctx, http.StatusBadRequest, false, nil, "Invalid Project ID")
-		return
-	}
-
 	var invite dto.ProjectUserInvite
 	if err := ctx.ShouldBindJSON(&invite); err != nil {
 		response.JSON(ctx, http.StatusBadRequest, false, nil, err.Error())
 		return
 	}
-	invite.ProjectID = projectID // Ensure ProjectID from path is used
 
 	// Assuming you have middleware to get the current user's ID
-	//  (e.g., from a JWT).  Replace with your actual logic.
-	authUser, _ := ctx.Get("user")
-	authUserID := authUser.(jwtLib.MapClaims)["user_id"].(int)
+	// (e.g., from a JWT). Replace with your actual logic.
+	authUserID := ctx.GetInt("user_id")
 
-	err = h.useCase.InviteUserToProject(ctx, &invite, authUserID)
+	err := h.useCase.InviteUserToProject(ctx, &invite, authUserID)
 	if err != nil {
 		response.JSON(ctx, http.StatusInternalServerError, false, nil, err.Error())
 		return
@@ -275,7 +291,7 @@ func (h *ProjectHandler) HandleInviteUserToProject(ctx *gin.Context) {
 // @Failure 400 {object} response.JSONResponse
 // @Failure 404 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /project/{project_id}/users/{user_id}/permissions [get]
+// @Router /project_users/{project_id}/permissions/{user_id} [get]
 func (h *ProjectHandler) HandleGetUserPermissionsForProject(ctx *gin.Context) {
 	projectIDStr := ctx.Param("project_id")
 	projectID, err := strconv.Atoi(projectIDStr)
@@ -313,7 +329,7 @@ func (h *ProjectHandler) HandleGetUserPermissionsForProject(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse{data=[]dto.ProjectUser}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /project/{project_id}/users [get]
+// @Router /project_users/{project_id} [get]
 func (h *ProjectHandler) HandleGetUsersInProject(ctx *gin.Context) {
 	projectIDStr := ctx.Param("project_id")
 	projectID, err := strconv.Atoi(projectIDStr)
@@ -340,7 +356,7 @@ func (h *ProjectHandler) HandleGetUsersInProject(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /project/{project_id}/accept [post]
+// @Router /project_users/{project_id}/accept [post]
 func (h *ProjectHandler) HandleAcceptProjectInvitation(ctx *gin.Context) {
 	projectIDStr := ctx.Param("project_id")
 	projectID, err := strconv.Atoi(projectIDStr)
@@ -350,9 +366,8 @@ func (h *ProjectHandler) HandleAcceptProjectInvitation(ctx *gin.Context) {
 	}
 
 	// Assuming you have middleware to get the current user's ID
-	//  (e.g., from a JWT).  Replace with your actual logic.
-	authUser, _ := ctx.Get("user")
-	authUserID := authUser.(jwtLib.MapClaims)["user_id"].(int)
+	// (e.g., from a JWT). Replace with your actual logic.
+	authUserID := ctx.GetInt("user_id")
 
 	err = h.useCase.AcceptProjectInvitation(ctx, projectID, authUserID)
 	if err != nil {

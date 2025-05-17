@@ -15,6 +15,52 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Login user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login user",
+                "parameters": [
+                    {
+                        "description": "Login user params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/users_handler.LoginUserParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/kanban": {
             "post": {
                 "description": "Create a new Kanban board",
@@ -30,12 +76,12 @@ const docTemplate = `{
                 "summary": "Create Kanban board",
                 "parameters": [
                     {
-                        "description": "Kanban board data",
+                        "description": "Kanban board data for creation",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Kanban"
+                            "$ref": "#/definitions/kanban_handler.CreateKanbanRequestParam"
                         }
                     }
                 ],
@@ -60,6 +106,68 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/kanban/project/{id}": {
+            "get": {
+                "description": "Get a Kanban board by project ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kanban"
+                ],
+                "summary": "Get Kanban board by project ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Kanban board project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.Kanban"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/response.JSONResponse"
                         }
@@ -157,7 +265,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Kanban"
+                            "$ref": "#/definitions/kanban_handler.UpdateKanbanRequestParam"
                         }
                     }
                 ],
@@ -234,7 +342,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/kanban/{kanban_id}/tasks": {
+        "/kanban_tasks/{kanban_id}": {
             "get": {
                 "description": "Get all tasks associated with a Kanban board",
                 "produces": [
@@ -509,21 +617,21 @@ const docTemplate = `{
                 }
             }
         },
-        "/project/{project_id}/accept": {
-            "post": {
-                "description": "Accept an invitation to join a project",
+        "/project_subprojects/{parent_project_id}": {
+            "get": {
+                "description": "Get all subprojects of a project",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Project"
                 ],
-                "summary": "Accept Project Invitation",
+                "summary": "Get Subprojects",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Project ID",
-                        "name": "project_id",
+                        "description": "Parent Project ID",
+                        "name": "parent_project_id",
                         "in": "path",
                         "required": true
                     }
@@ -532,7 +640,22 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.Project"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -550,19 +673,16 @@ const docTemplate = `{
                 }
             }
         },
-        "/project/{project_id}/invite": {
-            "post": {
-                "description": "Invite a user to a project with specific permissions",
-                "consumes": [
-                    "application/json"
-                ],
+        "/project_tasks/{project_id}": {
+            "get": {
+                "description": "Get all tasks associated with a project",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Project"
+                    "Task"
                 ],
-                "summary": "Invite User to Project",
+                "summary": "Get Tasks by Project ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -570,22 +690,28 @@ const docTemplate = `{
                         "name": "project_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "User invitation details",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.ProjectUserInvite"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.Task"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -603,7 +729,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/project/{project_id}/users": {
+        "/project_users/{project_id}": {
             "get": {
                 "description": "Get all users and their permissions in a project",
                 "produces": [
@@ -659,7 +785,94 @@ const docTemplate = `{
                 }
             }
         },
-        "/project/{project_id}/users/{user_id}/permissions": {
+        "/project_users/{project_id}/accept": {
+            "post": {
+                "description": "Accept an invitation to join a project",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Accept Project Invitation",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/project_users/{project_id}/invite": {
+            "post": {
+                "description": "Invite a user to a project with specific permissions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Invite User to Project",
+                "parameters": [
+                    {
+                        "description": "User invitation details",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProjectUserInvite"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/project_users/{project_id}/permissions/{user_id}": {
             "get": {
                 "description": "Get the permissions of a user in a project",
                 "produces": [
@@ -725,118 +938,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/project_subprojects/{parent_project_id}": {
-            "get": {
-                "description": "Get all subprojects of a project",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Project"
-                ],
-                "summary": "Get Subprojects",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Parent Project ID",
-                        "name": "parent_project_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.JSONResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.Project"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/{project_id}/tasks": {
-            "get": {
-                "description": "Get all tasks associated with a project",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Task"
-                ],
-                "summary": "Get Tasks by Project ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Project ID",
-                        "name": "project_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.JSONResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/dto.Task"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/task": {
             "post": {
                 "description": "Create a new Task",
@@ -852,12 +953,12 @@ const docTemplate = `{
                 "summary": "Create Task",
                 "parameters": [
                     {
-                        "description": "Task data",
+                        "description": "Task data for creation",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Task"
+                            "$ref": "#/definitions/task_handler.CreateTaskRequestParam"
                         }
                     }
                 ],
@@ -979,7 +1080,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Task"
+                            "$ref": "#/definitions/task_handler.UpdateTaskRequestParam"
                         }
                     }
                 ],
@@ -1375,6 +1476,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/user_shared_projects/{owner_id}": {
+            "get": {
+                "description": "Get all projects owned by a user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Get Projects by Owner ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Owner User ID",
+                        "name": "owner_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.JSONResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.Project"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/login": {
             "post": {
                 "description": "get user",
@@ -1416,7 +1573,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "description": "Убрали CreatedAt и UpdatedAt из запроса на создание",
                     "type": "string"
                 },
                 "id": {
@@ -1424,6 +1580,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "project_id": {
+                    "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
@@ -1486,6 +1645,9 @@ const docTemplate = `{
         },
         "dto.ProjectUserInvite": {
             "type": "object",
+            "required": [
+                "project_id"
+            ],
             "properties": {
                 "permission": {
                     "type": "string"
@@ -1502,7 +1664,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "description": "Убрали CreatedAt и UpdatedAt из запроса на создание",
                     "type": "string"
                 },
                 "description": {
@@ -1513,6 +1674,9 @@ const docTemplate = `{
                 },
                 "is_completed": {
                     "type": "boolean"
+                },
+                "kanban_id": {
+                    "type": "integer"
                 },
                 "title": {
                     "type": "string"
@@ -1548,10 +1712,32 @@ const docTemplate = `{
                 }
             }
         },
+        "kanban_handler.CreateKanbanRequestParam": {
+            "type": "object",
+            "required": [
+                "name",
+                "project_id"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "project_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "kanban_handler.UpdateKanbanRequestParam": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "project_handler.HandleCreateProjectParam": {
             "type": "object",
             "required": [
-                "color",
                 "description",
                 "name"
             ],
@@ -1582,6 +1768,44 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "task_handler.CreateTaskRequestParam": {
+            "type": "object",
+            "required": [
+                "description",
+                "kanban_id",
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "is_completed": {
+                    "type": "boolean"
+                },
+                "kanban_id": {
+                    "description": "Add other necessary fields for creation here, e.g., ProjectID, KanbanID, etc.\nAssuming these might come from the route or other means if not in the body",
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "task_handler.UpdateTaskRequestParam": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "is_completed": {
+                    "description": "Use pointer to distinguish between false and not provided",
+                    "type": "boolean"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },

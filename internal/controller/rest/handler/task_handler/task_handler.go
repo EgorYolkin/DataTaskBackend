@@ -17,22 +17,46 @@ func NewTaskHandler(useCase task_usecase.TaskUseCase) *TaskHandler {
 	return &TaskHandler{useCase: useCase}
 }
 
+// CreateTaskRequestParam for request parameters to avoid binding unwanted fields
+type CreateTaskRequestParam struct {
+	Title       string `json:"title" binding:"required"`
+	Description string `json:"description" binding:"required"`
+	IsCompleted bool   `json:"is_completed"`
+	// Add other necessary fields for creation here, e.g., ProjectID, KanbanID, etc.
+	// Assuming these might come from the route or other means if not in the body
+	KanbanID int `json:"kanban_id" binding:"required"` // Example: assuming kanban_id is required in body for task creation
+}
+
+type UpdateTaskRequestParam struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	IsCompleted *bool  `json:"is_completed"` // Use pointer to distinguish between false and not provided
+}
+
 // HandleCreateTask
 // @Summary Create Task
 // @Description Create a new Task
 // @Tags Task
 // @Accept json
 // @Produce json
-// @Param request body dto.Task true "Task data"
+// @Param request body CreateTaskRequestParam true "Task data for creation"
 // @Success 201 {object} response.JSONResponse{data=dto.Task}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
 // @Router /task [post]
 func (h *TaskHandler) HandleCreateTask(ctx *gin.Context) {
-	var task dto.Task
-	if err := ctx.ShouldBindJSON(&task); err != nil {
+	var param CreateTaskRequestParam
+	if err := ctx.ShouldBindJSON(&param); err != nil {
 		response.JSON(ctx, http.StatusBadRequest, false, nil, err.Error())
 		return
+	}
+
+	// Map request param data to dto.Task for use case
+	task := dto.Task{
+		Title:       param.Title,
+		Description: param.Description,
+		IsCompleted: param.IsCompleted,
+		KanbanID:    param.KanbanID,
 	}
 
 	createdTask, err := h.useCase.CreateTask(ctx, &task)
@@ -83,7 +107,7 @@ func (h *TaskHandler) HandleGetTaskByID(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "Task ID"
-// @Param request body dto.Task true "Updated Task data"
+// @Param request body UpdateTaskRequestParam true "Updated Task data"
 // @Success 200 {object} response.JSONResponse{data=dto.Task}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
@@ -96,14 +120,30 @@ func (h *TaskHandler) HandleUpdateTask(ctx *gin.Context) {
 		return
 	}
 
-	var task dto.Task
-	if err := ctx.ShouldBindJSON(&task); err != nil {
+	var param UpdateTaskRequestParam
+	if err := ctx.ShouldBindJSON(&param); err != nil {
 		response.JSON(ctx, http.StatusBadRequest, false, nil, err.Error())
 		return
 	}
-	task.ID = id // Ensure ID from path is used
 
-	updatedTask, err := h.useCase.UpdateTask(ctx, &task)
+	// Map request param data to a struct for use case
+	// Only include fields that were potentially provided
+	updateData := dto.Task{ID: id} // Start with the ID from the path
+
+	// Check if fields were provided in the request body and update the struct
+	// This logic can be more sophisticated if needed (e.g., distinguishing empty string vs not provided)
+	if param.Title != "" { // Assuming empty string means not provided or cleared
+		updateData.Title = param.Title
+	}
+	if param.Description != "" { // Assuming empty string means not provided or cleared
+		updateData.Description = param.Description
+	}
+	if param.IsCompleted != nil { // Check if the pointer is not nil
+		updateData.IsCompleted = *param.IsCompleted
+	}
+
+	// The use case should handle partial updates based on the provided fields
+	updatedTask, err := h.useCase.UpdateTask(ctx, &updateData)
 	if err != nil {
 		response.JSON(ctx, http.StatusInternalServerError, false, nil, err.Error())
 		return
@@ -148,7 +188,7 @@ func (h *TaskHandler) HandleDeleteTask(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse{data=[]dto.Task}
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /kanban/{kanban_id}/tasks [get]
+// @Router /kanban_tasks/{kanban_id} [get]
 func (h *TaskHandler) HandleGetTasksByKanbanID(ctx *gin.Context) {
 	kanbanIDStr := ctx.Param("kanban_id")
 	kanbanID, err := strconv.Atoi(kanbanIDStr)
@@ -244,7 +284,7 @@ func (h *TaskHandler) HandleAssignUserToTask(ctx *gin.Context) {
 //	@Success 200 {object} response.JSONResponse{data=[]dto.Task}
 //	@Failure 400 {object} response.JSONResponse
 //	@Failure 500 {object} response.JSONResponse
-//	@Router /projects/{project_id}/tasks [get]
+//	@Router /project_tasks/{project_id} [get]
 func (h *TaskHandler) HandleGetTasksByProjectID(ctx *gin.Context) {
 	projectIDStr := ctx.Param("project_id")
 	projectID, err := strconv.Atoi(projectIDStr)

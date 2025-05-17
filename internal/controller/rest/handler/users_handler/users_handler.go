@@ -146,14 +146,14 @@ type LoginUserParams struct {
 // LoginUserHandler handles the HTTP POST request to login user
 // @Summary Login user
 // @Description Login user
-// @Tags users
+// @Tags auth
 // @Accept json
 // @Produce json
 // @Param request body LoginUserParams true "Login user params"
 // @Success 200 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /users/login [post]
+// @Router /auth/login [post]
 func (h *UsersHandler) LoginUserHandler(ctx *gin.Context) {
 	params := &LoginUserParams{}
 

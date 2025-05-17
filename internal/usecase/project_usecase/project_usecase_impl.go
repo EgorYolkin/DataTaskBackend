@@ -123,6 +123,29 @@ func (uc *ProjectUseCaseImpl) GetProjectsByOwnerID(ctx context.Context, ownerID 
 	return dtoProjects, nil
 }
 
+func (uc *ProjectUseCaseImpl) GetSharedProjectsByOwnerID(ctx context.Context, ownerID int) ([]*dto.Project, error) {
+	projects, err := uc.repo.GetSharedProjectsByOwnerID(ctx, ownerID)
+	if err != nil {
+		return nil, err
+	}
+
+	var dtoProjects []*dto.Project
+	for _, p := range projects {
+		dtoProjects = append(dtoProjects, &dto.Project{
+			ID:              p.ID,
+			OwnerID:         p.OwnerID,
+			Name:            p.Name,
+			Description:     p.Description,
+			Color:           p.Color,
+			ParentProjectID: p.ParentProjectID,
+			CreatedAt:       p.CreatedAt,
+			UpdatedAt:       p.UpdatedAt,
+		})
+	}
+
+	return dtoProjects, nil
+}
+
 func (uc *ProjectUseCaseImpl) GetSubprojects(ctx context.Context, parentProjectID int) ([]*dto.Project, error) {
 	projects, err := uc.repo.GetSubprojects(ctx, parentProjectID)
 	if err != nil {

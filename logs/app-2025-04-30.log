@@ -232,3 +232,48 @@ time="2025-04-30 13:48:35" level=info msg="Try connect to pg:postgres://postgres
 time="2025-04-30 13:48:35" level=info msg="set up swagger" base_path=/api/v1 version=1
 time="2025-04-30 13:48:35" level=info msg="running app" host= port=8080
 time="2025-04-30 13:48:54" level=info msg="200 GET /api/v1/user_projects/1"
+time="2025-04-30 16:02:38" level=info msg="Starting DataTask"
+time="2025-04-30 16:02:38" level=info msg=secret
+time="2025-04-30 16:02:38" level=info msg=host
+time="2025-04-30 16:02:38" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 16:02:39" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 16:02:39" level=info msg="running app" host= port=8080
+time="2025-04-30 16:02:40" level=info msg="201 POST /api/v1/project/"
+time="2025-04-30 16:03:18" level=info msg="200 GET /api/v1/project/5"
+time="2025-04-30 16:03:30" level=info msg="200 GET /api/v1/project_subprojects/2"
+time="2025-04-30 16:03:45" level=info msg="200 GET /api/v1/user_projects/11"
+time="2025-04-30 16:03:47" level=info msg="200 GET /api/v1/user_projects/1"
+time="2025-04-30 16:16:22" level=info msg="200 GET /api/v1/project_users/5"
+time="2025-04-30 16:16:25" level=info msg="200 GET /api/v1/project_users/2"
+time="2025-04-30 16:16:26" level=info msg="200 GET /api/v1/project_users/2"
+time="2025-04-30 16:16:26" level=info msg="200 GET /api/v1/project_users/2"
+time="2025-04-30 16:16:27" level=info msg="200 GET /api/v1/project_users/2"
+time="2025-04-30 16:16:27" level=info msg="200 GET /api/v1/project_users/2"
+time="2025-04-30 16:16:28" level=info msg="200 GET /api/v1/project_users/2"
+time="2025-04-30 16:16:58" level=error msg="400 POST /api/v1/task/"
+time="2025-04-30 16:17:11" level=info msg="201 POST /api/v1/task/"
+time="2025-04-30 16:22:55" level=info msg="Starting DataTask"
+time="2025-04-30 16:22:55" level=info msg=secret
+time="2025-04-30 16:22:55" level=info msg=host
+time="2025-04-30 16:22:55" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-04-30 16:22:55" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-04-30 16:22:55" level=info msg="running app" host= port=8080
+time="2025-04-30 16:23:06" level=error msg="400 POST /api/v1/task/"
+time="2025-04-30 16:35:47" level=info msg="201 POST /api/v1/project/"
+time="2025-04-30 16:37:03" level=error msg="500 POST /api/v1/kanban/"
+time="2025-04-30 16:43:33" level=error msg="500 POST /api/v1/kanban/"
+time="2025-05-05 15:47:53" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:51:35" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:56:55" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:56:55" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:56:55" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:56:55" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:56:55" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:56:58" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:56:58" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:57:25" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:57:29" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:57:29" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:57:48" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 15:57:55" level=error msg="400 POST /api/v1/user/create"
+time="2025-05-05 16:01:19" level=error msg="400 POST /api/v1/user/create"

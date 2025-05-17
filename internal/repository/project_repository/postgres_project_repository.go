@@ -115,6 +115,37 @@ func (r *PostgresProjectRepository) GetProjectsByOwnerID(ctx context.Context, ow
 	return projects, nil
 }
 
+func (r *PostgresProjectRepository) GetSharedProjectsByOwnerID(ctx context.Context, ownerID int) ([]*entity.Project, error) {
+	q := fmt.Sprintf(`
+        SELECT p.id, p.owner_id, p.name, p.description, p.color, p.parent_project_id, p.created_at, p.updated_at
+        FROM %s p
+        JOIN %s pu ON p.id = pu.project_id
+        WHERE pu.user_id = $1;
+    `, database.ProjectsTable, database.ProjectUsersTable)
+
+	rows, err := r.db.QueryContext(ctx, q, ownerID)
+	if err != nil {
+		return nil, fmt.Errorf("get shared projects by user id: %w", err)
+	}
+	defer rows.Close()
+
+	var projects []*entity.Project
+	for rows.Next() {
+		var p entity.Project
+		if err := rows.Scan(
+			&p.ID, &p.OwnerID, &p.Name, &p.Description, &p.Color,
+			&p.ParentProjectID, &p.CreatedAt, &p.UpdatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("scan project: %w", err)
+		}
+		projects = append(projects, &p)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows error: %w", err)
+	}
+	return projects, nil
+}
+
 func (r *PostgresProjectRepository) GetSubprojects(ctx context.Context, parentProjectID int) ([]*entity.Project, error) {
 	q := fmt.Sprintf(`
         SELECT id, owner_id, name, description, color, parent_project_id, created_at, updated_at

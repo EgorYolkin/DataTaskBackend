@@ -3,12 +3,13 @@ definitions:
   dto.Kanban:
     properties:
       created_at:
-        description: Убрали CreatedAt и UpdatedAt из запроса на создание
         type: string
       id:
         type: integer
       name:
         type: string
+      project_id:
+        type: integer
       updated_at:
         type: string
     type: object
@@ -56,11 +57,12 @@ definitions:
         type: integer
       user_id:
         type: integer
+    required:
+    - project_id
     type: object
   dto.Task:
     properties:
       created_at:
-        description: Убрали CreatedAt и UpdatedAt из запроса на создание
         type: string
       description:
         type: string
@@ -68,6 +70,8 @@ definitions:
         type: integer
       is_completed:
         type: boolean
+      kanban_id:
+        type: integer
       title:
         type: string
       updated_at:
@@ -90,6 +94,21 @@ definitions:
       updated_at:
         type: string
     type: object
+  kanban_handler.CreateKanbanRequestParam:
+    properties:
+      name:
+        type: string
+      project_id:
+        type: integer
+    required:
+    - name
+    - project_id
+    type: object
+  kanban_handler.UpdateKanbanRequestParam:
+    properties:
+      name:
+        type: string
+    type: object
   project_handler.HandleCreateProjectParam:
     properties:
       color:
@@ -101,7 +120,6 @@ definitions:
       parent_project_id:
         type: integer
     required:
-    - color
     - description
     - name
     type: object
@@ -114,6 +132,34 @@ definitions:
         type: string
       success:
         type: boolean
+    type: object
+  task_handler.CreateTaskRequestParam:
+    properties:
+      description:
+        type: string
+      is_completed:
+        type: boolean
+      kanban_id:
+        description: |-
+          Add other necessary fields for creation here, e.g., ProjectID, KanbanID, etc.
+          Assuming these might come from the route or other means if not in the body
+        type: integer
+      title:
+        type: string
+    required:
+    - description
+    - kanban_id
+    - title
+    type: object
+  task_handler.UpdateTaskRequestParam:
+    properties:
+      description:
+        type: string
+      is_completed:
+        description: Use pointer to distinguish between false and not provided
+        type: boolean
+      title:
+        type: string
     type: object
   users_handler.CreateUserRequestParam:
     properties:
@@ -147,18 +193,48 @@ info:
   title: DataTask
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      parameters:
+      - description: Login user params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/users_handler.LoginUserParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Login user
+      tags:
+      - auth
   /kanban:
     post:
       consumes:
       - application/json
       description: Create a new Kanban board
       parameters:
-      - description: Kanban board data
+      - description: Kanban board data for creation
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.Kanban'
+          $ref: '#/definitions/kanban_handler.CreateKanbanRequestParam'
       produces:
       - application/json
       responses:
@@ -259,7 +335,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.Kanban'
+          $ref: '#/definitions/kanban_handler.UpdateKanbanRequestParam'
       produces:
       - application/json
       responses:
@@ -283,7 +359,45 @@ paths:
       summary: Update Kanban board
       tags:
       - Kanban
-  /kanban/{kanban_id}/tasks:
+  /kanban/project/{id}:
+    get:
+      description: Get a Kanban board by project ID
+      parameters:
+      - description: Kanban board project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Kanban'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Kanban board by project ID
+      tags:
+      - Kanban
+  /kanban_tasks/{kanban_id}:
     get:
       description: Get all tasks associated with a Kanban board
       parameters:
@@ -453,9 +567,43 @@ paths:
       summary: Update Project
       tags:
       - Project
-  /project/{project_id}/accept:
-    post:
-      description: Accept an invitation to join a project
+  /project_subprojects/{parent_project_id}:
+    get:
+      description: Get all subprojects of a project
+      parameters:
+      - description: Parent Project ID
+        in: path
+        name: parent_project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Subprojects
+      tags:
+      - Project
+  /project_tasks/{project_id}:
+    get:
+      description: Get all tasks associated with a project
       parameters:
       - description: Project ID
         in: path
@@ -468,7 +616,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.JSONResponse'
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Task'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -477,45 +632,10 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/response.JSONResponse'
-      summary: Accept Project Invitation
+      summary: Get Tasks by Project ID
       tags:
-      - Project
-  /project/{project_id}/invite:
-    post:
-      consumes:
-      - application/json
-      description: Invite a user to a project with specific permissions
-      parameters:
-      - description: Project ID
-        in: path
-        name: project_id
-        required: true
-        type: integer
-      - description: User invitation details
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.ProjectUserInvite'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-      summary: Invite User to Project
-      tags:
-      - Project
-  /project/{project_id}/users:
+      - Task
+  /project_users/{project_id}:
     get:
       description: Get all users and their permissions in a project
       parameters:
@@ -549,7 +669,64 @@ paths:
       summary: Get Users in Project
       tags:
       - Project
-  /project/{project_id}/users/{user_id}/permissions:
+  /project_users/{project_id}/accept:
+    post:
+      description: Accept an invitation to join a project
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Accept Project Invitation
+      tags:
+      - Project
+  /project_users/{project_id}/invite:
+    post:
+      consumes:
+      - application/json
+      description: Invite a user to a project with specific permissions
+      parameters:
+      - description: User invitation details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProjectUserInvite'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Invite User to Project
+      tags:
+      - Project
+  /project_users/{project_id}/permissions/{user_id}:
     get:
       description: Get the permissions of a user in a project
       parameters:
@@ -590,86 +767,18 @@ paths:
       summary: Get User Permissions for Project
       tags:
       - Project
-  /project_subprojects/{parent_project_id}:
-    get:
-      description: Get all subprojects of a project
-      parameters:
-      - description: Parent Project ID
-        in: path
-        name: parent_project_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.JSONResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/dto.Project'
-                  type: array
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-      summary: Get Subprojects
-      tags:
-      - Project
-  /projects/{project_id}/tasks:
-    get:
-      description: Get all tasks associated with a project
-      parameters:
-      - description: Project ID
-        in: path
-        name: project_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.JSONResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/dto.Task'
-                  type: array
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-      summary: Get Tasks by Project ID
-      tags:
-      - Task
   /task:
     post:
       consumes:
       - application/json
       description: Create a new Task
       parameters:
-      - description: Task data
+      - description: Task data for creation
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.Task'
+          $ref: '#/definitions/task_handler.CreateTaskRequestParam'
       produces:
       - application/json
       responses:
@@ -770,7 +879,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.Task'
+          $ref: '#/definitions/task_handler.UpdateTaskRequestParam'
       produces:
       - application/json
       responses:
@@ -959,6 +1068,40 @@ paths:
       tags:
       - User
   /user_projects/{owner_id}:
+    get:
+      description: Get all projects owned by a user
+      parameters:
+      - description: Owner User ID
+        in: path
+        name: owner_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Projects by Owner ID
+      tags:
+      - Project
+  /user_shared_projects/{owner_id}:
     get:
       description: Get all projects owned by a user
       parameters:

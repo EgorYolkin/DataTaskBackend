@@ -11,6 +11,7 @@ type ProjectRepository interface {
 	UpdateProject(ctx context.Context, project *entity.Project) (*entity.Project, error)
 	DeleteProject(ctx context.Context, id int) error
 	GetProjectsByOwnerID(ctx context.Context, ownerID int) ([]*entity.Project, error)
+	GetSharedProjectsByOwnerID(ctx context.Context, ownerID int) ([]*entity.Project, error)
 	GetSubprojects(ctx context.Context, parentProjectID int) ([]*entity.Project, error)
 	//GetProjectsByTaskID(ctx context.Context, taskID int) ([]*entity.Project, error) // If needed
 

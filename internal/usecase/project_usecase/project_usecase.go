@@ -11,6 +11,7 @@ type ProjectUseCase interface {
 	UpdateProject(ctx context.Context, project *dto.Project) (*dto.Project, error)
 	DeleteProject(ctx context.Context, id int) error
 	GetProjectsByOwnerID(ctx context.Context, ownerID int) ([]*dto.Project, error)
+	GetSharedProjectsByOwnerID(ctx context.Context, ownerID int) ([]*dto.Project, error)
 	GetSubprojects(ctx context.Context, parentProjectID int) ([]*dto.Project, error)
 	//GetProjectsByTaskID(ctx context.Context, taskID int) ([]*dto.Project, error) // If needed
 

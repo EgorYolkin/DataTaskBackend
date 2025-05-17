@@ -5,8 +5,11 @@ import (
 	"DataTask/internal/di"
 	"DataTask/pkg/logger"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"time"
+	//"time"
 )
 
 func Run(cfg *config.Config) error {
@@ -17,6 +20,7 @@ func Run(cfg *config.Config) error {
 
 	router := gin.New()
 	router.Use(gin.Recovery())
+	router.Use(cors.New(getCORSConfig()))
 	router.Static("/docs", "./docs")
 
 	apiRouter := router.Group("/api/v1")
@@ -47,6 +51,7 @@ func Run(cfg *config.Config) error {
 	// Kanban Routes
 	kanbanHandlerRouterGroup := protectedApiRouter.Group("/kanban")
 	{
+		kanbanHandlerRouterGroup.GET("/project/:project_id", app.KanbanHandler.HandleGetKanbansByProjectID)
 		kanbanHandlerRouterGroup.POST("/", app.KanbanHandler.HandleCreateKanban)
 		kanbanHandlerRouterGroup.GET("/:id", app.KanbanHandler.HandleGetKanbanByID)
 		kanbanHandlerRouterGroup.PUT("/:id", app.KanbanHandler.HandleUpdateKanban)
@@ -82,8 +87,9 @@ func Run(cfg *config.Config) error {
 		projectUsersHandlerRouterGroup.GET("/:project_id", app.ProjectHandler.HandleGetUsersInProject)
 		projectUsersHandlerRouterGroup.POST("/:project_id/accept", app.ProjectHandler.HandleAcceptProjectInvitation)
 	}
-	
+
 	apiRouter.GET("/user_projects/:owner_id", app.ProjectHandler.HandleGetProjectsByOwnerID)
+	apiRouter.GET("/user_shared_projects/:owner_id", app.ProjectHandler.HandleGetSharedProjectsByOwnerID)
 	apiRouter.GET("/project_subprojects/:parent_project_id", app.ProjectHandler.HandleGetSubprojects)
 
 	routerDSN := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
@@ -95,3 +101,24 @@ func Run(cfg *config.Config) error {
 
 	return router.Run(routerDSN)
 }
+
+func getCORSConfig() cors.Config {
+	return cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8080"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+}
+
+//func getCORSConfig() cors.Config {
+//	return cors.Config{
+//		AllowAllOrigins:  true, // Используйте AllowOrigins: []string{"*"} если AllowAllOrigins нет
+//		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+//		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "Content-Length"}, // Добавьте общие заголовки
+//		ExposeHeaders:    []string{"Content-Length", "X-Request-ID"},                                      // Добавьте Content-Length для полноты
+//		AllowCredentials: true,                                                                            // Оставьте true, если нужно
+//		MaxAge:           12 * time.Hour,
+//	}
+//}
