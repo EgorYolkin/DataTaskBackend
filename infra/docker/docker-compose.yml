@@ -13,7 +13,7 @@ services:
     networks:
       - datatask_internal_network
     env_file:
-      - ../../configs/.env.docker
+      - ../../infra/config/.env.docker
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 5s
@@ -28,23 +28,23 @@ services:
     volumes:
       - datatask_postgres_volume:/var/lib/postgresql/data
 
-#  migrate:
-#    container_name: datatask_migrate
-#    image: migrate/migrate:v4.16.2
-#    logging:
-#      driver: "json-file"
-#      options:
-#        max-size: "10m"
-#        max-file: "3"
-#    restart: no
-#    depends_on:
-#      db:
-#        condition: service_healthy
-#    volumes:
-#      - ${PWD}/internal/repository/database/migrations:/migrations
-#    entrypoint: sh -c 'migrate -path=/migrations -database=postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_BASE}?sslmode=${DB_SSL} up'
-#    networks:
-#      - datatask_internal_network
+  migrate:
+    container_name: datatask_migrate
+    image: migrate/migrate:v4.16.2
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: no
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ${PWD}/infra/database/migrations:/migrations
+    entrypoint: sh -c 'migrate -path=/migrations -database=postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_BASE}?sslmode=disable up'
+    networks:
+      - datatask_internal_network
 
   rabbitmq:
     container_name: datatask_rabbitmq
@@ -54,27 +54,6 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBIT_MQ_PASS}
     networks:
       - datatask_internal_network
-
-#  minio:
-#    container_name: datatask_minio
-#    image: minio/minio
-#    environment:
-#      - MINIO_ACCESS_KEY=${S3_USER}
-#      - MINIO_SECRET_KEY=${S3_PASS}
-#    ports:
-#      - "${S3_PORT}:9000"
-#      - "${S3_DASHBOARD_PORT}:9001"
-#    networks:
-#      - datatask_internal_network
-#    volumes:
-#      - datatask_minio_data:/data
-#    command: server /data --console-address ":9001"
-#    restart: unless-stopped
-#    deploy:
-#      restart_policy:
-#        condition: on-failure
-#        delay: 5s
-#        max_attempts: 10
 
   prometheus:
     container_name: datatask_prometheus
@@ -86,11 +65,11 @@ services:
     restart: always
     image: prom/prometheus
     env_file:
-      - ../../configs/.env.docker
+      - ../../infra/config/.env.docker
     ports:
       - ${PROMETHEUS_PORT}:9090
     volumes:
-      - ../../infra/metrics/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../../infra/metrics/prometheus/prometheus.yml:/etc/prometheus
     deploy:
       restart_policy:
         condition: on-failure
@@ -112,7 +91,7 @@ services:
     depends_on:
       - prometheus
     env_file:
-      - ../../configs/.env.docker
+      - ../../infra/config/.env.docker
     ports:
       - ${GF_PORT}:3000
     deploy:
@@ -137,17 +116,15 @@ services:
         delay: 5s
         max_attempts: 10
     env_file:
-      - ../../configs/.env.docker
+      - ../../infra/config/.env.docker
     volumes:
-      - ../../configs/.env.docker:/app/configs/.env.docker
+      - ../../infra/config:/app/infra/config
       - ../../docs:/app/docs
     ports:
-      - "${GIN_PORT}:8080"
+      - "8080:8080"
     depends_on:
       - db
       - migrate
-      - rabbitmq
-      - minio
     networks:
       - datatask_internal_network
     develop:
@@ -165,9 +142,6 @@ volumes:
 
   datatask_postgres_volume:
     name: datatask_postgres_volume
-
-  datatask_minio_data:
-    name: datatask_minio_data
 
   datatask_grafana_data:
     name: datatask_grafana_data

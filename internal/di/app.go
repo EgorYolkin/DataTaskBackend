@@ -2,6 +2,7 @@ package di
 
 import (
 	"DataTask/internal/config"
+	"DataTask/internal/controller/rest/handler/comment_handler"
 	"DataTask/internal/controller/rest/handler/kanban_handler"
 	"DataTask/internal/controller/rest/handler/project_handler"
 	"DataTask/internal/controller/rest/handler/task_handler"
@@ -22,6 +23,7 @@ type App struct {
 	KanbanHandler  *kanban_handler.KanbanHandler
 	TaskHandler    *task_handler.TaskHandler
 	ProjectHandler *project_handler.ProjectHandler
+	CommentHandler *comment_handler.CommentHandler
 
 	AuthMiddleware *auth_middleware.AuthMiddleware
 }
@@ -39,6 +41,7 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 	kanbanHandler := InitializeKanbanHandler(db)
 	taskHandler := InitializeTaskHandler(db)
 	projectHandler := InitializeProjectHandler(db)
+	commentHandler := InitializeCommentHandler(db)
 
 	authMiddleware := InitializeAuthMiddleware(db, cfg.JWT.Secret)
 
@@ -51,6 +54,7 @@ func InitializeApp(cfg *config.Config) (*App, error) {
 		KanbanHandler:     kanbanHandler,
 		TaskHandler:       taskHandler,
 		ProjectHandler:    projectHandler,
+		CommentHandler:    commentHandler,
 
 		AuthMiddleware: authMiddleware,
 	}, nil

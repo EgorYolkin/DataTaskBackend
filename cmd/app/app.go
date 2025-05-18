@@ -71,6 +71,13 @@ func Run(cfg *config.Config) error {
 	apiRouter.GET("/user/:user_id/tasks", app.TaskHandler.HandleGetTasksByUserID)
 	apiRouter.GET("/project_tasks/:project_id", app.TaskHandler.HandleGetTasksByProjectID)
 
+	// Comment Routes
+	commentHandlerRouterGroup := protectedApiRouter.Group("/comment")
+	{
+		commentHandlerRouterGroup.POST("/forTask", app.CommentHandler.HandleCreateCommentForTask)
+		commentHandlerRouterGroup.GET("/forTask/:task_id", app.CommentHandler.HandleGetCommentsByTaskID)
+	}
+
 	// Project Routes
 	projectHandlerRouterGroup := protectedApiRouter.Group("/project")
 	{

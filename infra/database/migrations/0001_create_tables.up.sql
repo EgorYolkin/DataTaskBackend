@@ -45,6 +45,22 @@ CREATE TABLE task
     updated_at   TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE comment
+(
+    id         SERIAL PRIMARY KEY,
+    author     INTEGER REFERENCES users (id) ON DELETE CASCADE,
+    text       TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE comment_task
+(
+    task_id    INTEGER REFERENCES task (id) ON DELETE CASCADE,
+    comment_id INTEGER REFERENCES comment (id) ON DELETE CASCADE,
+    PRIMARY KEY (task_id, comment_id)
+);
+
 CREATE TABLE task_users
 (
     task_id INTEGER REFERENCES task (id) ON DELETE CASCADE,

@@ -1,5 +1,30 @@
 basePath: /api/v1
 definitions:
+  comment_handler.HandleCreateCommentForTaskRequestParam:
+    properties:
+      task_id:
+        type: integer
+      text:
+        type: string
+    required:
+    - task_id
+    - text
+    type: object
+  dto.Comment:
+    properties:
+      author:
+        $ref: '#/definitions/dto.User'
+      created_at:
+        type: string
+      id:
+        type: integer
+      task_id:
+        type: integer
+      text:
+        type: string
+      updated_at:
+        type: string
+    type: object
   dto.Kanban:
     properties:
       created_at:
@@ -57,8 +82,6 @@ definitions:
         type: integer
       user_id:
         type: integer
-    required:
-    - project_id
     type: object
   dto.Task:
     properties:
@@ -223,6 +246,77 @@ paths:
       summary: Login user
       tags:
       - auth
+  /comment/forTask:
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment for task
+      parameters:
+      - description: Comment data for creation
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/comment_handler.HandleCreateCommentForTaskRequestParam'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Comment'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Create Comment For Task
+      tags:
+      - Comment
+  /comment/forTask/{task_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get all comments for a specific task
+      parameters:
+      - description: Task ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Comment'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Comments By Task ID
+      tags:
+      - Comment
   /kanban:
     post:
       consumes:

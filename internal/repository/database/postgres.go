@@ -8,12 +8,14 @@ import (
 const (
 	UsersTable        = "users"
 	KanbanTable       = "kanban"
+	CommentTable      = "comment"
 	ProjectTasksTable = "project_tasks"
 	TaskTable         = "task"
 	ProjectsTable     = "projects"
 	TaskUsersTable    = "task_users"
 	ProjectUsersTable = "project_users"
 	KanbanTasksTable  = "kanban_tasks"
+	CommentTaskTable  = "comment_task"
 )
 
 func ConnectPostgres(dsn string) (*sql.DB, error) {
