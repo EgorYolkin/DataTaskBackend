@@ -20,7 +20,7 @@ func Run(cfg *config.Config) error {
 
 	router := gin.New()
 	router.Use(gin.Recovery())
-	router.Use(cors.New(getCORSConfig()))
+	router.Use(cors.New(getCORSConfig(app.Config)))
 	router.Static("/docs", "./docs")
 
 	apiRouter := router.Group("/api/v1")
@@ -109,23 +109,12 @@ func Run(cfg *config.Config) error {
 	return router.Run(routerDSN)
 }
 
-func getCORSConfig() cors.Config {
+func getCORSConfig(cfg *config.Config) cors.Config {
 	return cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:8080"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowOrigins:     cfg.HTTP.AllowOrigins,
+		AllowMethods:     cfg.HTTP.AllowMethods,
+		AllowHeaders:     cfg.HTTP.AllowHeaders,
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}
 }
-
-//func getCORSConfig() cors.Config {
-//	return cors.Config{
-//		AllowAllOrigins:  true, // Используйте AllowOrigins: []string{"*"} если AllowAllOrigins нет
-//		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-//		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "Content-Length"}, // Добавьте общие заголовки
-//		ExposeHeaders:    []string{"Content-Length", "X-Request-ID"},                                      // Добавьте Content-Length для полноты
-//		AllowCredentials: true,                                                                            // Оставьте true, если нужно
-//		MaxAge:           12 * time.Hour,
-//	}
-//}

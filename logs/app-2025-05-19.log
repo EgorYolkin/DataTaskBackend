@@ -1,0 +1,19 @@
+time="2025-05-19 21:04:42" level=info msg="Starting DataTask"
+time="2025-05-19 21:04:42" level=info msg=secret
+time="2025-05-19 21:04:42" level=info msg=host
+time="2025-05-19 21:04:42" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-05-19 21:04:42" level=warning msg="DB not ready (attempt 1/10), retrying in 2s..."
+time="2025-05-19 21:04:44" level=warning msg="DB not ready (attempt 2/10), retrying in 2s..."
+time="2025-05-19 21:04:46" level=warning msg="DB not ready (attempt 3/10), retrying in 2s..."
+time="2025-05-19 21:04:56" level=info msg="Starting DataTask"
+time="2025-05-19 21:04:56" level=info msg=secret
+time="2025-05-19 21:04:56" level=info msg=host
+time="2025-05-19 21:04:56" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-05-19 21:04:56" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-05-19 21:04:56" level=info msg="running app" host= port=8080
+time="2025-05-19 21:05:13" level=info msg="Starting DataTask"
+time="2025-05-19 21:05:13" level=info msg=secret
+time="2025-05-19 21:05:13" level=info msg=host
+time="2025-05-19 21:05:13" level=info msg="Try connect to pg:postgres://postgres:postgres@localhost:5432/datatask?sslmode=disable"
+time="2025-05-19 21:05:13" level=info msg="set up swagger" base_path=/api/v1 version=1
+time="2025-05-19 21:05:13" level=info msg="running app" host= port=8080
