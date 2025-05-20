@@ -43,7 +43,7 @@ definitions:
       color:
         type: string
       created_at:
-        description: Убрали CreatedAt и UpdatedAt из запроса на создание
+        description: omitempty, чтобы не возвращать null
         type: string
       description:
         type: string
@@ -71,6 +71,8 @@ definitions:
         type: string
       project_id:
         type: integer
+      user_email:
+        type: string
       user_id:
         type: integer
     type: object
@@ -80,8 +82,8 @@ definitions:
         type: string
       project_id:
         type: integer
-      user_id:
-        type: integer
+      user_email:
+        type: string
     type: object
   dto.Task:
     properties:
@@ -1126,6 +1128,29 @@ paths:
       summary: delete user
       tags:
       - User
+  /user/me:
+    post:
+      consumes:
+      - application/json
+      description: get user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: get user
+      tags:
+      - User
   /user/update:
     post:
       consumes:
@@ -1229,29 +1254,6 @@ paths:
       summary: Get Projects by Owner ID
       tags:
       - Project
-  /users/login:
-    post:
-      consumes:
-      - application/json
-      description: get user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.JSONResponse'
-      summary: get user
-      tags:
-      - User
 security:
 - Authorization: []
 securityDefinitions:

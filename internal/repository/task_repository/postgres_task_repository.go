@@ -108,7 +108,15 @@ func (r *PostgresTaskRepository) GetTasksByUserID(ctx context.Context, userID in
         FROM task t
         LEFT JOIN kanban k ON t.kanban_id = k.id
         LEFT JOIN projects p ON k.project_id = p.id
-        WHERE p.owner_id = $1 OR t.kanban_id IS NULL;
+        -- Присоединяем project_users, чтобы учесть приглашенных пользователей
+        LEFT JOIN project_users pu ON p.id = pu.project_id
+        WHERE
+            -- Задачи из проектов, где пользователь - владелец
+            p.owner_id = $1
+            -- ИЛИ задачи из проектов, куда пользователь приглашен
+            OR pu.user_id = $1
+            -- ИЛИ задачи, которые не привязаны к канбану/проекту (если такие задачи существуют и должны быть видны)
+            OR t.kanban_id IS NULL;
     `
 
 	rows, err := r.db.QueryContext(ctx, q, userID)
@@ -120,6 +128,7 @@ func (r *PostgresTaskRepository) GetTasksByUserID(ctx context.Context, userID in
 	var tasks []*entity.Task
 	for rows.Next() {
 		var t entity.Task
+		// Убедитесь, что все поля задачи, которые вы ожидаете, сканируются
 		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.IsCompleted, &t.CreatedAt, &t.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("scan task: %w", err)
 		}

@@ -1423,6 +1423,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/me": {
+            "post": {
+                "description": "get user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "get user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.JSONResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user/update": {
             "post": {
                 "description": "update user",
@@ -1648,41 +1683,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/users/login": {
-            "post": {
-                "description": "get user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "get user",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.JSONResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -1751,7 +1751,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_at": {
-                    "description": "Убрали CreatedAt и UpdatedAt из запроса на создание",
+                    "description": "omitempty, чтобы не возвращать null",
                     "type": "string"
                 },
                 "description": {
@@ -1793,6 +1793,9 @@ const docTemplate = `{
                 "project_id": {
                     "type": "integer"
                 },
+                "user_email": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "integer"
                 }
@@ -1807,8 +1810,8 @@ const docTemplate = `{
                 "project_id": {
                     "type": "integer"
                 },
-                "user_id": {
-                    "type": "integer"
+                "user_email": {
+                    "type": "string"
                 }
             }
         },

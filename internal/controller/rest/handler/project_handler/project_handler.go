@@ -161,7 +161,7 @@ func (h *ProjectHandler) HandleDeleteProject(ctx *gin.Context) {
 
 	err = h.useCase.DeleteProject(ctx, id)
 	if err != nil {
-		response.JSON(ctx, http.StatusInternalServerError, false, nil, err.Error())
+		response.JSON(ctx, http.StatusBadRequest, false, nil, err.Error())
 		return
 	}
 
@@ -267,8 +267,6 @@ func (h *ProjectHandler) HandleInviteUserToProject(ctx *gin.Context) {
 		return
 	}
 
-	// Assuming you have middleware to get the current user's ID
-	// (e.g., from a JWT). Replace with your actual logic.
 	authUserID := ctx.GetInt("user_id")
 
 	err := h.useCase.InviteUserToProject(ctx, &invite, authUserID)

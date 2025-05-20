@@ -215,7 +215,7 @@ func (h *UsersHandler) LoginUserHandler(ctx *gin.Context) {
 // @Success 200 {object} response.JSONResponse
 // @Failure 400 {object} response.JSONResponse
 // @Failure 500 {object} response.JSONResponse
-// @Router /users/login [post]
+// @Router /user/me [post]
 func (h *UsersHandler) HandleGetCurrentUser(ctx *gin.Context) {
 	authUser, _ := ctx.Get("user")
 	authUserEmail := authUser.(jwtLib.MapClaims)["user_email"].(string)

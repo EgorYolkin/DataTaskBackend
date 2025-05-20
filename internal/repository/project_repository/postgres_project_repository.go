@@ -209,16 +209,32 @@ func (r *PostgresProjectRepository) GetProjectsByTaskID(ctx context.Context, tas
 */
 
 func (r *PostgresProjectRepository) InviteUserToProject(ctx context.Context, projectUser *entity.ProjectUser) error {
-	q := fmt.Sprintf(`
+	// 1. Get user_id by userEmail
+	var userID int64
+	selectUserQuery :=
+		fmt.Sprintf(`
+        SELECT id FROM %s WHERE email = $1;
+    `, database.UsersTable)
+	err := r.db.QueryRowContext(ctx, selectUserQuery, projectUser.UserEmail).Scan(&userID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("invite user to project: user with email %s not found", projectUser.UserEmail)
+		}
+		return fmt.Errorf("invite user to project: failed to get user ID by email: %w", err)
+	}
+
+	// 2. Use getting userID for insert in project_users
+	insertQuery := fmt.Sprintf(`
         INSERT INTO %s (project_id, user_id, permission, invited_by_user_id)
         VALUES ($1, $2, $3, $4);
     `, database.ProjectUsersTable)
 
-	_, err := r.db.ExecContext(ctx, q,
-		projectUser.ProjectID, projectUser.UserID, projectUser.Permission, projectUser.InvitedByUserID)
+	_, err = r.db.ExecContext(ctx, insertQuery,
+		projectUser.ProjectID, userID, projectUser.Permission, projectUser.InvitedByUserID) // Используем userID здесь
 	if err != nil {
-		return fmt.Errorf("invite user to project: %w", err)
+		return fmt.Errorf("invite user to project: failed to insert into project users: %w", err)
 	}
+
 	return nil
 }
 

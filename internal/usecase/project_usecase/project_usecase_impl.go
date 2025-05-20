@@ -5,6 +5,7 @@ import (
 	"DataTask/internal/domain/entity"
 	"DataTask/internal/repository/project_repository"
 	"context"
+	"fmt"
 )
 
 type ProjectUseCaseImpl struct {
@@ -93,7 +94,16 @@ func (uc *ProjectUseCaseImpl) UpdateProject(ctx context.Context, project *dto.Pr
 }
 
 func (uc *ProjectUseCaseImpl) DeleteProject(ctx context.Context, id int) error {
-	err := uc.repo.DeleteProject(ctx, id)
+	project, err := uc.repo.GetProjectByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if project.OwnerID != ctx.Value("user_id").(int) {
+		return fmt.Errorf("delete project: user is not the creator of project %d", id)
+	}
+
+	err = uc.repo.DeleteProject(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -197,7 +207,7 @@ func (uc *ProjectUseCaseImpl) GetProjectsByTaskID(ctx context.Context, taskID in
 func (uc *ProjectUseCaseImpl) InviteUserToProject(ctx context.Context, invite *dto.ProjectUserInvite, invitedByUserID int) error {
 	entityProjectUser := &entity.ProjectUser{
 		ProjectID:       invite.ProjectID,
-		UserID:          invite.UserID,
+		UserEmail:       invite.UserEmail,
 		Permission:      invite.Permission,
 		InvitedByUserID: &invitedByUserID,
 	}

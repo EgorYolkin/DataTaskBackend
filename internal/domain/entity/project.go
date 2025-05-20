@@ -16,6 +16,7 @@ type Project struct {
 type ProjectUser struct {
 	ProjectID       int        `json:"project_id"`
 	UserID          int        `json:"user_id"`
+	UserEmail       string     `json:"user_email"`
 	Permission      string     `json:"permission"`
 	InvitedByUserID *int       `json:"invited_by_user_id"`
 	InvitedAt       time.Time  `json:"invited_at"`

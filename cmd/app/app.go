@@ -45,7 +45,7 @@ func Run(cfg *config.Config) error {
 
 	protectedUsersRouterGroup := protectedApiRouter.Group("/user")
 	{
-		protectedUsersRouterGroup.POST("/me", app.UsersHandler.HandleGetCurrentUser)
+		protectedUsersRouterGroup.GET("/me", app.UsersHandler.HandleGetCurrentUser)
 	}
 
 	// Kanban Routes
