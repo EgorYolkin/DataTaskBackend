@@ -1,4 +1,1264 @@
+basePath: /api/v1
+definitions:
+  comment_handler.HandleCreateCommentForTaskRequestParam:
+    properties:
+      task_id:
+        type: integer
+      text:
+        type: string
+    required:
+    - task_id
+    - text
+    type: object
+  dto.Comment:
+    properties:
+      author:
+        $ref: '#/definitions/dto.User'
+      created_at:
+        type: string
+      id:
+        type: integer
+      task_id:
+        type: integer
+      text:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.Kanban:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      project_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  dto.Project:
+    properties:
+      color:
+        type: string
+      created_at:
+        description: omitempty, чтобы не возвращать null
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      owner_id:
+        type: integer
+      parent_project_id:
+        type: integer
+      updated_at:
+        description: omitempty, чтобы не возвращать null
+        type: string
+    type: object
+  dto.ProjectUser:
+    properties:
+      invited_at:
+        type: string
+      invited_by_user_id:
+        type: integer
+      joined_at:
+        type: string
+      permission:
+        type: string
+      project_id:
+        type: integer
+      user_email:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.ProjectUserInvite:
+    properties:
+      permission:
+        type: string
+      project_id:
+        type: integer
+      user_email:
+        type: string
+    type: object
+  dto.Task:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      is_completed:
+        type: boolean
+      kanban_id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.User:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      surname:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  kanban_handler.CreateKanbanRequestParam:
+    properties:
+      name:
+        type: string
+      project_id:
+        type: integer
+    required:
+    - name
+    - project_id
+    type: object
+  kanban_handler.UpdateKanbanRequestParam:
+    properties:
+      name:
+        type: string
+    type: object
+  project_handler.HandleCreateProjectParam:
+    properties:
+      color:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      parent_project_id:
+        type: integer
+    required:
+    - description
+    - name
+    type: object
+  response.JSONResponse:
+    description: default JSON-response
+    properties:
+      data:
+        type: object
+      error:
+        type: string
+      success:
+        type: boolean
+    type: object
+  task_handler.CreateTaskRequestParam:
+    properties:
+      description:
+        type: string
+      is_completed:
+        type: boolean
+      kanban_id:
+        description: |-
+          Add other necessary fields for creation here, e.g., ProjectID, KanbanID, etc.
+          Assuming these might come from the route or other means if not in the body
+        type: integer
+      title:
+        type: string
+    required:
+    - description
+    - kanban_id
+    - title
+    type: object
+  task_handler.UpdateTaskRequestParam:
+    properties:
+      description:
+        type: string
+      is_completed:
+        description: Use pointer to distinguish between false and not provided
+        type: boolean
+      title:
+        type: string
+    type: object
+  users_handler.CreateUserRequestParam:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      surname:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - surname
+    type: object
+  users_handler.LoginUserParams:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
 info:
   contact: {}
-paths: {}
+  description: Task manager
+  title: DataTask
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user
+      parameters:
+      - description: Login user params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/users_handler.LoginUserParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Login user
+      tags:
+      - auth
+  /comment/forTask:
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment for task
+      parameters:
+      - description: Comment data for creation
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/comment_handler.HandleCreateCommentForTaskRequestParam'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Comment'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Create Comment For Task
+      tags:
+      - Comment
+  /comment/forTask/{task_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get all comments for a specific task
+      parameters:
+      - description: Task ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Comment'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Comments By Task ID
+      tags:
+      - Comment
+  /kanban:
+    post:
+      consumes:
+      - application/json
+      description: Create a new Kanban board
+      parameters:
+      - description: Kanban board data for creation
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/kanban_handler.CreateKanbanRequestParam'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Kanban'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Create Kanban board
+      tags:
+      - Kanban
+  /kanban/{id}:
+    delete:
+      description: Delete a Kanban board by its ID
+      parameters:
+      - description: Kanban board ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Delete Kanban board
+      tags:
+      - Kanban
+    get:
+      description: Get a Kanban board by its ID
+      parameters:
+      - description: Kanban board ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Kanban'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Kanban board by ID
+      tags:
+      - Kanban
+    put:
+      consumes:
+      - application/json
+      description: Update a Kanban board's details
+      parameters:
+      - description: Kanban board ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Kanban board data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/kanban_handler.UpdateKanbanRequestParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Kanban'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Update Kanban board
+      tags:
+      - Kanban
+  /kanban/project/{id}:
+    get:
+      description: Get a Kanban board by project ID
+      parameters:
+      - description: Kanban board project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Kanban'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Kanban board by project ID
+      tags:
+      - Kanban
+  /kanban_tasks/{kanban_id}:
+    get:
+      description: Get all tasks associated with a Kanban board
+      parameters:
+      - description: Kanban Board ID
+        in: path
+        name: kanban_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Task'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Tasks by Kanban ID
+      tags:
+      - Task
+  /project:
+    post:
+      consumes:
+      - application/json
+      description: Create a new project
+      parameters:
+      - description: Project data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/project_handler.HandleCreateProjectParam'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Create Project
+      tags:
+      - Project
+  /project/{id}:
+    delete:
+      description: Delete a project by its ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Delete Project
+      tags:
+      - Project
+    get:
+      description: Get a project by its ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Project by ID
+      tags:
+      - Project
+    put:
+      consumes:
+      - application/json
+      description: Update a project's details
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated project data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Update Project
+      tags:
+      - Project
+  /project_subprojects/{parent_project_id}:
+    get:
+      description: Get all subprojects of a project
+      parameters:
+      - description: Parent Project ID
+        in: path
+        name: parent_project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Subprojects
+      tags:
+      - Project
+  /project_tasks/{project_id}:
+    get:
+      description: Get all tasks associated with a project
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Task'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Tasks by Project ID
+      tags:
+      - Task
+  /project_users/{project_id}:
+    get:
+      description: Get all users and their permissions in a project
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ProjectUser'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Users in Project
+      tags:
+      - Project
+  /project_users/{project_id}/accept:
+    post:
+      description: Accept an invitation to join a project
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Accept Project Invitation
+      tags:
+      - Project
+  /project_users/{project_id}/invite:
+    post:
+      consumes:
+      - application/json
+      description: Invite a user to a project with specific permissions
+      parameters:
+      - description: User invitation details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProjectUserInvite'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Invite User to Project
+      tags:
+      - Project
+  /project_users/{project_id}/permissions/{user_id}:
+    get:
+      description: Get the permissions of a user in a project
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get User Permissions for Project
+      tags:
+      - Project
+  /task:
+    post:
+      consumes:
+      - application/json
+      description: Create a new Task
+      parameters:
+      - description: Task data for creation
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task_handler.CreateTaskRequestParam'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Task'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Create Task
+      tags:
+      - Task
+  /task/{id}:
+    delete:
+      description: Delete a Task by its ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Delete Task
+      tags:
+      - Task
+    get:
+      description: Get a Task by its ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Task'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Task by ID
+      tags:
+      - Task
+    put:
+      consumes:
+      - application/json
+      description: Update a Task's details
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Task data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task_handler.UpdateTaskRequestParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Task'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Update Task
+      tags:
+      - Task
+  /task/{task_id}/assign:
+    post:
+      consumes:
+      - application/json
+      description: Assign a user to a task
+      parameters:
+      - description: Task ID
+        in: path
+        name: task_id
+        required: true
+        type: integer
+      - description: User ID to assign
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties:
+            type: integer
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Assign User to Task
+      tags:
+      - Task
+  /user/{user_id}/tasks:
+    get:
+      description: Get all tasks assigned to a user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Task'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Tasks by User ID
+      tags:
+      - Task
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      description: create user
+      parameters:
+      - description: User create data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/users_handler.CreateUserRequestParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: create user
+      tags:
+      - User
+  /user/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: delete user
+      tags:
+      - User
+  /user/me:
+    post:
+      consumes:
+      - application/json
+      description: get user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: get user
+      tags:
+      - User
+  /user/update:
+    post:
+      consumes:
+      - application/json
+      description: update user
+      parameters:
+      - description: User create data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: update user
+      tags:
+      - User
+  /user_projects/{owner_id}:
+    get:
+      description: Get all projects owned by a user
+      parameters:
+      - description: Owner User ID
+        in: path
+        name: owner_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Projects by Owner ID
+      tags:
+      - Project
+  /user_shared_projects/{owner_id}:
+    get:
+      description: Get all projects owned by a user
+      parameters:
+      - description: Owner User ID
+        in: path
+        name: owner_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JSONResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JSONResponse'
+      summary: Get Projects by Owner ID
+      tags:
+      - Project
+security:
+- Authorization: []
+securityDefinitions:
+  Authorization:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
