@@ -58,13 +58,13 @@ func (r *PostgresProjectRepository) GetProjectByID(ctx context.Context, id int) 
 func (r *PostgresProjectRepository) UpdateProject(ctx context.Context, project *entity.Project) (*entity.Project, error) {
 	q := fmt.Sprintf(`
         UPDATE %s SET 
-            owner_id = $1, name = $2, description = $3, color = $4, parent_project_id = $5, updated_at = NOW()
-        WHERE id = $6
+            name = $1, description = $2, color = $3, parent_project_id = $4, updated_at = NOW()
+        WHERE id = $5
         RETURNING id, owner_id, name, description, color, parent_project_id, created_at, updated_at;
     `, database.ProjectsTable)
 
 	err := r.db.QueryRowContext(ctx, q,
-		project.OwnerID, project.Name, project.Description, project.Color, project.ParentProjectID, project.ID).Scan(
+		project.Name, project.Description, project.Color, project.ParentProjectID, project.ID).Scan(
 		&project.ID, &project.OwnerID, &project.Name, &project.Description, &project.Color,
 		&project.ParentProjectID, &project.CreatedAt, &project.UpdatedAt,
 	)

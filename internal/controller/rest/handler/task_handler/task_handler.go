@@ -20,7 +20,7 @@ func NewTaskHandler(useCase task_usecase.TaskUseCase) *TaskHandler {
 // CreateTaskRequestParam for request parameters to avoid binding unwanted fields
 type CreateTaskRequestParam struct {
 	Title       string `json:"title" binding:"required"`
-	Description string `json:"description" binding:"required"`
+	Description string `json:"description"`
 	IsCompleted bool   `json:"is_completed"`
 	// Add other necessary fields for creation here, e.g., ProjectID, KanbanID, etc.
 	// Assuming these might come from the route or other means if not in the body

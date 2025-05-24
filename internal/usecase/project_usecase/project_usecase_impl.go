@@ -67,7 +67,6 @@ func (uc *ProjectUseCaseImpl) GetProjectByID(ctx context.Context, id int) (*dto.
 func (uc *ProjectUseCaseImpl) UpdateProject(ctx context.Context, project *dto.Project) (*dto.Project, error) {
 	entityProject := &entity.Project{
 		ID:              project.ID,
-		OwnerID:         project.OwnerID,
 		Name:            project.Name,
 		Description:     project.Description,
 		Color:           project.Color,
