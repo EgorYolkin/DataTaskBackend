@@ -2,19 +2,24 @@ package task_handler
 
 import (
 	"DataTask/internal/domain/dto"
+	"DataTask/internal/usecase/notification_usecase"
 	"DataTask/internal/usecase/task_usecase"
 	"DataTask/pkg/http/response"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
+// TaskHandler is base handler struct
 type TaskHandler struct {
-	useCase task_usecase.TaskUseCase
+	useCase             task_usecase.TaskUseCase
+	notificationUseCase notification_usecase.NotificationUseCase
 }
 
-func NewTaskHandler(useCase task_usecase.TaskUseCase) *TaskHandler {
-	return &TaskHandler{useCase: useCase}
+// NewTaskHandler is base function of handler creation
+func NewTaskHandler(useCase task_usecase.TaskUseCase, notificationUseCase notification_usecase.NotificationUseCase) *TaskHandler {
+	return &TaskHandler{useCase: useCase, notificationUseCase: notificationUseCase}
 }
 
 // CreateTaskRequestParam for request parameters to avoid binding unwanted fields
@@ -51,9 +56,12 @@ func (h *TaskHandler) HandleCreateTask(ctx *gin.Context) {
 		return
 	}
 
+	ownerID := ctx.GetInt("user_id")
+
 	// Map request param data to dto.Task for use case
 	task := dto.Task{
 		Title:       param.Title,
+		OwnerID:     ownerID,
 		Description: param.Description,
 		IsCompleted: param.IsCompleted,
 		KanbanID:    param.KanbanID,

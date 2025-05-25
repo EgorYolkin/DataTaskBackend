@@ -3,19 +3,25 @@ package comment_handler
 import (
 	"DataTask/internal/domain/dto"
 	"DataTask/internal/usecase/comment_usecase"
+	"DataTask/internal/usecase/notification_usecase"
 	"DataTask/pkg/http/response"
+	"fmt"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
+// CommentHandler is base handler struct
 type CommentHandler struct {
-	useCase comment_usecase.CommentUseCase
+	useCase             comment_usecase.CommentUseCase
+	notificationUseCase notification_usecase.NotificationUseCase
 }
 
-func NewCommentHandler(useCase comment_usecase.CommentUseCase) *CommentHandler {
-	return &CommentHandler{useCase: useCase}
+// NewTaskHandler is base function of handler creation
+func NewCommentHandler(useCase comment_usecase.CommentUseCase, notificationUseCase notification_usecase.NotificationUseCase) *CommentHandler {
+	return &CommentHandler{useCase: useCase, notificationUseCase: notificationUseCase}
 }
 
 type HandleCreateCommentForTaskRequestParam struct {
@@ -65,6 +71,17 @@ func (h *CommentHandler) HandleCreateCommentForTask(ctx *gin.Context) {
 	if err != nil {
 		response.JSON(ctx, http.StatusInternalServerError, false, nil, err.Error())
 		return
+	}
+
+	authUserEmail := ctx.GetString("user_email")
+	notification := dto.Notification{
+		OwnerID:     createdComment.Author.ID,
+		Title:       "New comment",
+		Description: fmt.Sprintf(`%s: %s`, authUserEmail, createdComment.Text),
+	}
+	err = h.notificationUseCase.CreateNotification(ctx, &notification)
+	if err != nil {
+		fmt.Print(err)
 	}
 
 	response.JSON(ctx, http.StatusCreated, true, createdComment, "")

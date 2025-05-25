@@ -77,6 +77,13 @@ func Run(cfg *config.Config) error {
 		commentHandlerRouterGroup.POST("/forTask", app.CommentHandler.HandleCreateCommentForTask)
 		commentHandlerRouterGroup.GET("/forTask/:task_id", app.CommentHandler.HandleGetCommentsByTaskID)
 	}
+	
+	notificationHandlerRouterGroup := protectedApiRouter.Group("/notification")
+	{
+		notificationHandlerRouterGroup.POST("/", app.NotificationHandler.HandleCreateNotification)
+		notificationHandlerRouterGroup.GET("/", app.NotificationHandler.HandleGetUserNotifications)
+		notificationHandlerRouterGroup.PATCH("/:notification_id/read", app.NotificationHandler.HandleSetNotificationIsRead)
+	}
 
 	// Project Routes
 	projectHandlerRouterGroup := protectedApiRouter.Group("/project")

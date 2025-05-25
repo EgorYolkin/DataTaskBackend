@@ -209,33 +209,37 @@ func (r *PostgresProjectRepository) GetProjectsByTaskID(ctx context.Context, tas
 */
 
 func (r *PostgresProjectRepository) InviteUserToProject(ctx context.Context, projectUser *entity.ProjectUser) error {
-	// 1. Get user_id by userEmail
-	var userID int64
-	selectUserQuery :=
-		fmt.Sprintf(`
+    var userID int64
+    selectUserQuery := fmt.Sprintf(`
         SELECT id FROM %s WHERE email = $1;
     `, database.UsersTable)
-	err := r.db.QueryRowContext(ctx, selectUserQuery, projectUser.UserEmail).Scan(&userID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return fmt.Errorf("invite user to project: user with email %s not found", projectUser.UserEmail)
-		}
-		return fmt.Errorf("invite user to project: failed to get user ID by email: %w", err)
-	}
+    err := r.db.QueryRowContext(ctx, selectUserQuery, projectUser.UserEmail).Scan(&userID)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return fmt.Errorf("invite user to project: user with email %s not found", projectUser.UserEmail)
+        }
+        return fmt.Errorf("invite user to project: failed to get user ID by email: %w", err)
+    }
 
-	// 2. Use getting userID for insert in project_users
-	insertQuery := fmt.Sprintf(`
+    inviteQuery := fmt.Sprintf(`
+        WITH RECURSIVE project_hierarchy AS (
+            SELECT id FROM %s WHERE id = $1
+            UNION ALL
+            SELECT p.id FROM %s p
+            JOIN project_hierarchy ph ON p.parent_project_id = ph.id
+        )
         INSERT INTO %s (project_id, user_id, permission, invited_by_user_id)
-        VALUES ($1, $2, $3, $4);
-    `, database.ProjectUsersTable)
+        SELECT ph.id, $2, $3, $4 FROM project_hierarchy ph
+        ON CONFLICT (project_id, user_id) DO NOTHING
+    `, database.ProjectsTable, database.ProjectsTable, database.ProjectUsersTable)
 
-	_, err = r.db.ExecContext(ctx, insertQuery,
-		projectUser.ProjectID, userID, projectUser.Permission, projectUser.InvitedByUserID) // Используем userID здесь
-	if err != nil {
-		return fmt.Errorf("invite user to project: failed to insert into project users: %w", err)
-	}
+    _, err = r.db.ExecContext(ctx, inviteQuery, 
+        projectUser.ProjectID, userID, projectUser.Permission, projectUser.InvitedByUserID)
+    if err != nil {
+        return fmt.Errorf("invite user to project: failed to invite user to projects: %w", err)
+    }
 
-	return nil
+    return nil
 }
 
 func (r *PostgresProjectRepository) GetUserPermissionsForProject(ctx context.Context, projectID int, userID int) (string, error) {

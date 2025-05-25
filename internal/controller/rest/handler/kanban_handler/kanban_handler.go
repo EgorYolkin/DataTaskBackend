@@ -3,18 +3,23 @@ package kanban_handler
 import (
 	"DataTask/internal/domain/dto"
 	"DataTask/internal/usecase/kanban_usecase"
+	"DataTask/internal/usecase/notification_usecase"
 	"DataTask/pkg/http/response"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
+// KanbanHandler is base handler struct
 type KanbanHandler struct {
-	useCase kanban_usecase.KanbanUseCase
+	useCase             kanban_usecase.KanbanUseCase
+	notificationUseCase notification_usecase.NotificationUseCase
 }
 
-func NewKanbanHandler(useCase kanban_usecase.KanbanUseCase) *KanbanHandler {
-	return &KanbanHandler{useCase: useCase}
+// NewKanbanHandler is base function of handler creation
+func NewKanbanHandler(useCase kanban_usecase.KanbanUseCase, notificationUseCase notification_usecase.NotificationUseCase) *KanbanHandler {
+	return &KanbanHandler{useCase: useCase, notificationUseCase: notificationUseCase}
 }
 
 type CreateKanbanRequestParam struct {

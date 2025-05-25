@@ -12,16 +12,19 @@ import (
 	"time"
 )
 
+// ProjectHandler is base handler struct
 type UsersHandler struct {
 	useCase      user_usecase.UserUseCase
 	jwtSecretKey string
 }
 
+// Base JWT TTL`s
 var (
 	accessTTL  = time.Hour * 24
 	refreshTTL = time.Hour * 24 * 7
 )
 
+// NewUsersHandler is base function of handler creation
 func NewUsersHandler(useCase user_usecase.UserUseCase, jwtSecretKey string) *UsersHandler {
 	return &UsersHandler{
 		useCase:      useCase,

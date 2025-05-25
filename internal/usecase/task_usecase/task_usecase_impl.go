@@ -18,6 +18,7 @@ func NewTaskUseCase(repo task_repository.TaskRepository) *TaskUseCaseImpl {
 func (uc *TaskUseCaseImpl) CreateTask(ctx context.Context, task *dto.Task) (*dto.Task, error) {
 	entityTask := &entity.Task{
 		Title:       task.Title,
+		OwnerID:     task.OwnerID,
 		KanbanID:    task.KanbanID,
 		Description: task.Description,
 		IsCompleted: task.IsCompleted,

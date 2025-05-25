@@ -18,11 +18,11 @@ func NewPostgresTaskRepository(db *sql.DB) *PostgresTaskRepository {
 
 func (r *PostgresTaskRepository) CreateTask(ctx context.Context, task *entity.Task) (*entity.Task, error) {
 	q := fmt.Sprintf(`
-        INSERT INTO %s (title, description, is_completed, kanban_id) VALUES ($1, $2, $3, $4) 
+        INSERT INTO %s (title, description, is_completed, kanban_id, owner_id) VALUES ($1, $2, $3, $4, $5) 
         RETURNING id, title, description, is_completed, created_at, updated_at, kanban_id;
     `, database.TaskTable) // Define TaskTable in your database package
 
-	err := r.db.QueryRowContext(ctx, q, task.Title, task.Description, task.IsCompleted, task.KanbanID).Scan(
+	err := r.db.QueryRowContext(ctx, q, task.Title, task.Description, task.IsCompleted, task.KanbanID, task.OwnerID).Scan(
 		&task.ID, &task.Title, &task.Description, &task.IsCompleted, &task.CreatedAt, &task.UpdatedAt, &task.KanbanID,
 	)
 	if err != nil {

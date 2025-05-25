@@ -13,6 +13,20 @@ CREATE TABLE users
     updated_at      TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE notification
+(
+    id                 SERIAL PRIMARY KEY,
+    owner_id           INTEGER      REFERENCES users (id) ON DELETE SET NULL,
+
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    
+    is_read BOOLEAN DEFAULT FALSE,
+
+    created_at         TIMESTAMP DEFAULT NOW(),
+    updated_at         TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE projects
 (
     id                SERIAL PRIMARY KEY,
@@ -39,6 +53,7 @@ CREATE TABLE task
     id           SERIAL PRIMARY KEY,
     title        VARCHAR(255) NOT NULL,
     kanban_id    INTEGER REFERENCES kanban (id) ON DELETE CASCADE,
+    owner_id    INTEGER REFERENCES users (id) ON DELETE CASCADE,
     description  TEXT,
     is_completed BOOLEAN   DEFAULT FALSE,
     created_at   TIMESTAMP DEFAULT NOW(),

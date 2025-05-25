@@ -2,20 +2,29 @@ package project_handler
 
 import (
 	"DataTask/internal/domain/dto"
+	"DataTask/internal/usecase/notification_usecase"
 	"DataTask/internal/usecase/project_usecase"
 	"DataTask/pkg/http/response"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
+// ProjectHandler is base handler struct
 type ProjectHandler struct {
-	useCase project_usecase.ProjectUseCase
+	useCase             project_usecase.ProjectUseCase
+	notificationUseCase notification_usecase.NotificationUseCase
 }
 
-func NewProjectHandler(useCase project_usecase.ProjectUseCase) *ProjectHandler {
-	return &ProjectHandler{useCase: useCase}
+// NewProjectHandler is base function of handler creation
+func NewProjectHandler(useCase project_usecase.ProjectUseCase, notificationUseCase notification_usecase.NotificationUseCase) *ProjectHandler {
+	return &ProjectHandler{useCase: useCase, notificationUseCase: notificationUseCase}
 }
+
+const (
+	defaultProjectName = "SomeProject"
+)
 
 type HandleCreateProjectParam struct {
 	Name            string `json:"name" binding:"required"`
@@ -131,6 +140,10 @@ func (h *ProjectHandler) HandleUpdateProject(ctx *gin.Context) {
 		return
 	}
 	project.ID = id // Ensure ID from path is used
+
+	if len(project.Name) <= 0 {
+		project.Name = defaultProjectName
+	}
 
 	updatedProject, err := h.useCase.UpdateProject(ctx, &project)
 	if err != nil {

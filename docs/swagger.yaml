@@ -38,6 +38,25 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.Notification:
+    properties:
+      created_at:
+        description: omitempty, чтобы не возвращать null
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      is_read:
+        type: boolean
+      owner_id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        description: omitempty, чтобы не возвращать null
+        type: string
+    type: object
   dto.Project:
     properties:
       color:
@@ -134,6 +153,16 @@ definitions:
       name:
         type: string
     type: object
+  notification_handler.HandleCreateNotificationParam:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    required:
+    - description
+    - title
+    type: object
   project_handler.HandleCreateProjectParam:
     properties:
       color:
@@ -172,7 +201,6 @@ definitions:
       title:
         type: string
     required:
-    - description
     - kanban_id
     - title
     type: object
@@ -527,6 +555,107 @@ paths:
       summary: Get Tasks by Kanban ID
       tags:
       - Task
+  /notification:
+    get:
+      description: Retrieves all notifications for a specific user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of notifications
+          schema:
+            items:
+              $ref: '#/definitions/dto.Notification'
+            type: array
+        "400":
+          description: Invalid owner ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user notifications
+      tags:
+      - Notifications
+    post:
+      consumes:
+      - application/json
+      description: Creates a new notification for a user
+      parameters:
+      - description: Notification object to be created
+        in: body
+        name: notification
+        required: true
+        schema:
+          $ref: '#/definitions/notification_handler.HandleCreateNotificationParam'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Notification created successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new notification
+      tags:
+      - Notifications
+  /notification/{notification_id}/read:
+    patch:
+      description: Marks a specific notification as read by its ID
+      parameters:
+      - description: Notification ID
+        in: path
+        name: notification_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Notification marked as read successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid notification ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Notification not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Mark notification as read
+      tags:
+      - Notifications
   /project:
     post:
       consumes:

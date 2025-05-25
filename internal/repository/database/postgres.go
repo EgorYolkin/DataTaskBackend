@@ -7,6 +7,7 @@ import (
 
 const (
 	UsersTable        = "users"
+	NotificationTable = "notification"
 	KanbanTable       = "kanban"
 	CommentTable      = "comment"
 	ProjectTasksTable = "project_tasks"
